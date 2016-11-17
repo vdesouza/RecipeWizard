@@ -14,11 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.TextView;
 
-import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
-
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "Recipe Wizard";
 
     // Tabbed main activity and swipe between fragments adapted from these two tutorials:
     // https://www.youtube.com/watch?v=zQekzaAgIlQ
@@ -83,10 +84,28 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Ingredients list
     public static class IngredientsListFragment extends Fragment {
+
+        TextView mIngredientsTextView;
+        GridView mIngredientsGridView;
+
+        // Adapter for GridView
+        IngredientsListCategoryAdapter mAdapter;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText("Ingredients Place Holder");
+
+            View rootView = inflater.inflate(R.layout.recipies_fragment, container, false);
+            mIngredientsTextView = (TextView) rootView.findViewById(R.id.ingredientsTextView);
+            mIngredientsGridView = (GridView) rootView.findViewById(R.id.ingredientsGridView);
+
+            mIngredientsTextView.setText(R.string.ingredients_header);
+
+            // Create a new IngredientsListCategoryAdapter for the GridView
+            mAdapter = new IngredientsListCategoryAdapter(getActivity());
+
+            // Attach the adapter to the GridView
+            mIngredientsGridView.setAdapter(mAdapter);
+
             return rootView;
         }
     }
