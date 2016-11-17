@@ -16,14 +16,14 @@ import java.util.List;
  * Created by vdesouza on 11/16/16.
  */
 
-public class IngredientsListCategoryAdapter extends BaseAdapter {
+public class IngredientsCategoryAdapter extends BaseAdapter {
 
-    private static final String TAG = "Recipe Wizard : IngredientsListCategoryAdapter";
+    private static final String TAG = "Recipe Wizard : IngredientsCategoryAdapter";
 
     private final List<IngredientsCategory> mItems = new ArrayList<IngredientsCategory>();
     private final Context mContext;
 
-    public IngredientsListCategoryAdapter(Context context) {
+    public IngredientsCategoryAdapter(Context context) {
         mContext = context;
     }
 

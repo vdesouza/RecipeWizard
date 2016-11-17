@@ -1,0 +1,39 @@
+{
+  "ingredients_categories" : [
+    { "Dry Goods" : [
+        {"name" : "Pasta", "checked" : "false"}, 
+        {"name" : "Rice", "checked" : "true"},
+        {"name" : "Oats", "checked" : "false"}
+    ] },
+    { "Meats" : [
+        {"name" : "Chicken", "checked" : "false"}, 
+        {"name" : "Beef", "checked" : "true"},
+        {"name" : "Lamb", "checked" : "false"}
+    ] },
+    { "Fruits" : [
+        {"name" : "Apple", "checked" : "false"}, 
+        {"name" : "Banana", "checked" : "true"},
+        {"name" : "Grapes", "checked" : "false"}
+    ] },
+    { "Vegetables" : [
+        {"name" : "Broccoli", "checked" : "false"}, 
+        {"name" : "Kale", "checked" : "true"},
+        {"name" : "Carrots", "checked" : "false"}
+    ] },
+    { "Spices and Herbs" : [
+        {"name" : "Oregano", "checked" : "false"}, 
+        {"name" : "Basil", "checked" : "true"},
+        {"name" : "Black Pepper", "checked" : "false"}
+    ] },
+    { "Baking" : [
+        {"name" : "Flour", "checked" : "false"}, 
+        {"name" : "Yeast", "checked" : "true"},
+        {"name" : "Baking Soda", "checked" : "false"}
+    ] },
+    { "Oils and Condiments" : [
+        {"name" : "Olive Oil", "checked" : "false"}, 
+        {"name" : "Vinegar", "checked" : "true"},
+        {"name" : "Ketchup", "checked" : "false"}
+    ] }
+  ]
+}

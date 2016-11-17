@@ -1,8 +1,5 @@
 package com.recipewizard.recipewizard;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.res.Configuration;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -89,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         GridView mIngredientsGridView;
 
         // Adapter for GridView
-        IngredientsListCategoryAdapter mAdapter;
+        IngredientsCategoryAdapter mAdapter;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,13 +98,39 @@ public class MainActivity extends AppCompatActivity {
 
             mIngredientsTextView.setText(R.string.ingredients_header);
 
-            // Create a new IngredientsListCategoryAdapter for the GridView
-            mAdapter = new IngredientsListCategoryAdapter(getActivity());
+            // Create a new IngredientsCategoryAdapter for the GridView
+            mAdapter = new IngredientsCategoryAdapter(getActivity());
 
             // Attach the adapter to the GridView
             mIngredientsGridView.setAdapter(mAdapter);
 
+            // OnClickListener for categories
+            mIngredientsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    // TODO - Go to Ingredients List Activity for that category
+                }
+            });
+
             return rootView;
+        }
+
+        // TODO - Build ingredients categories
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Load saved ToDoItems, if necessary
+            if (mAdapter.getCount() == 0) {
+                //TODO: loadItems();
+            }
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            // Save ToDoItems
+            // TODO: saveItems();
         }
     }
 
