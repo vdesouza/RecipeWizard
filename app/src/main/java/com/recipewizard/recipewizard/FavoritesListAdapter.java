@@ -74,18 +74,16 @@ public class FavoritesListAdapter extends BaseAdapter {
         return pos;
 
     }
-    /*
-    public boolean contains(String place, String country){
-        Badge b;
-        for(int i = 0; i < getCount(); i++){
-            b = (Badge) getItem(i);
-            if((b.getPlace().compareTo(place) == 0) && (b.getCountry().compareTo(country) == 0)){
-                return true;
-            }
-        }
-        return false;
-    }
-    */
+   public void removeRecipeWithName(String name){
+       int i = 0;
+       for(Recipe r : mItems){
+           if(r.getName().compareTo(name) == 0){
+               break;
+           }
+           i++;
+       }
+       mItems.remove(i);
+   }
 
     // Create a View for the Badge at specified position
     // Remember to check whether convertView holds an already allocated View
