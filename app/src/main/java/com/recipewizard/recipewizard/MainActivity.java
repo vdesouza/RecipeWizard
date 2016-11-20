@@ -253,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
+        // Test to check that checked ingredients are getting seeing correctly
+        // Get all checked ingredients by calling mMasterIngredientsList.getCheckedIngredients()
+        // Returns ArrayList<Ingredients>
         @Override
         public void onResume() {
             super.onResume();
