@@ -1,6 +1,7 @@
 package com.recipewizard.recipewizard;
 
 import android.content.Intent;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -11,16 +12,16 @@ import java.util.Date;
 
 public class IngredientsCategory {
 
-    private static final String TAG = "Recipe Wizard : IngredientsCategory";
+    private static final String TAG = "Recipe Wizard:Category";
     public static final String ITEM_SEP = System.getProperty("line.separator");
 
     public final static String CATEGORY_NAME = "category_name";
     public final static String CHECKED_COUNT = "checked_count";
 
     private String mCategoryName = new String();
-    private int mCheckedCount;
+    private String mCheckedCount;
 
-    IngredientsCategory(String name, int count) {
+    IngredientsCategory(String name, String count) {
         this.mCategoryName = name;
         this.mCheckedCount = count;
         // TODO - Category Icon
@@ -29,7 +30,7 @@ public class IngredientsCategory {
     // Create a new IngredientsCategory from data packaged in an Intent
     IngredientsCategory(Intent intent) {
         mCategoryName = intent.getStringExtra(IngredientsCategory.CATEGORY_NAME);
-        mCheckedCount = Integer.valueOf(intent.getStringExtra(IngredientsCategory.CHECKED_COUNT));
+        mCheckedCount = intent.getStringExtra(IngredientsCategory.CHECKED_COUNT);
         // TODO - Category Icon
     }
 
@@ -47,10 +48,8 @@ public class IngredientsCategory {
         mCategoryName = name;
     }
 
-    public int getCheckedCount() {
-        return mCheckedCount;
-    }
-    public void setCheckedCount(int count) {
+    public String getCheckedCount() { return mCheckedCount; }
+    public void setCheckedCount(String count) {
         mCheckedCount = count;
     }
 

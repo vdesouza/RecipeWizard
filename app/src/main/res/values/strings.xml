@@ -2,6 +2,6 @@
     <string name="app_name">Recipe Wizard</string>
     <string name="ingredients_page_title">Ingredients</string>
     <string name="ingredients_header">Select Ingredients Category</string>
-    <string name="checked_count"> checked ingredients.</string>
+    <string name="checked_count">%1$s checked ingredients.</string>
     <string name="recipes_page_title">Recipes</string>
 </resources>

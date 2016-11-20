@@ -2,11 +2,13 @@ package com.recipewizard.recipewizard;
 
 import android.content.Intent;
 
+import java.io.Serializable;
+
 /**
  * Created by vdesouza on 11/17/16.
  */
 
-public class Ingredient {
+public class Ingredient implements Serializable {
 
     private static final String TAG = "Recipe Wizard : Ingredient";
     public static final String ITEM_SEP = System.getProperty("line.separator");
@@ -50,7 +52,7 @@ public class Ingredient {
 
 
     public String toString() {
-        return mName + ITEM_SEP + mChecked + ITEM_SEP + "\n";
+        return mName + ": " + mChecked + ITEM_SEP;
     }
 
     public String toLog() {

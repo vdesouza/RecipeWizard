@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,14 +17,14 @@ import java.util.List;
  * Created by vdesouza on 11/17/16.
  */
 
-public class IngredientsListAdapter extends BaseAdapter {
+public class IngredientListAdapter extends BaseAdapter {
 
-    private static final String TAG = "Recipe Wizard : IngredientsListAdapter";
+    private static final String TAG = "Recipe Wizard : IngredientListAdapter";
 
     private final List<Ingredient> mItems = new ArrayList<Ingredient>();
     private final Context mContext;
 
-    public IngredientsListAdapter(Context context) {
+    public IngredientListAdapter(Context context) {
         mContext = context;
     }
 
@@ -62,7 +63,6 @@ public class IngredientsListAdapter extends BaseAdapter {
 
     static class ViewHolder {
         private CheckBox ingredientCheckBox;
-        private TextView ingredientNameTextView;
     }
 
     // Create a View for the IngredientsList at specified position
@@ -73,25 +73,31 @@ public class IngredientsListAdapter extends BaseAdapter {
         final Ingredient ingredient = mItems.get(position);
 
         RelativeLayout itemLayout = (RelativeLayout) convertView;
-        IngredientsListAdapter.ViewHolder holder;
+        final IngredientListAdapter.ViewHolder holder;
 
         // Inflate the View for this Ingredients Category from ingredients_category.xml
         if (itemLayout == null) {
             itemLayout = (RelativeLayout) LayoutInflater.from(mContext).inflate(
                     R.layout.ingredient, parent, false);
-            holder = new IngredientsListAdapter.ViewHolder();
+            holder = new IngredientListAdapter.ViewHolder();
             holder.ingredientCheckBox = (CheckBox) itemLayout.findViewById(R.id.ingredientCheckBox);
-            holder.ingredientNameTextView = (TextView) itemLayout.findViewById(R.id.ingredientNameTextView);
             itemLayout.setTag(holder);
+            holder.ingredientCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                    public void onClick(View v) {
+                    ingredient.setCheckedStatus(holder.ingredientCheckBox.isChecked());
+                }
+
+            });
         }
         else {
             itemLayout = (RelativeLayout) convertView;
-            holder = (IngredientsListAdapter.ViewHolder) itemLayout.getTag();
+            holder = (IngredientListAdapter.ViewHolder) itemLayout.getTag();
         }
 
         // Fill in specific Ingredient data
         // Display Ingredient name in TextView
-        holder.ingredientNameTextView.setText(ingredient.getName());
+        holder.ingredientCheckBox.setText(ingredient.getName());
 
         // Display check status of CheckBox
         holder.ingredientCheckBox.setChecked(ingredient.getCheckedStatus());

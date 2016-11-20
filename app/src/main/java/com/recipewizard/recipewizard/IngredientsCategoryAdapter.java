@@ -1,10 +1,12 @@
 package com.recipewizard.recipewizard;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,7 +20,9 @@ import java.util.List;
 
 public class IngredientsCategoryAdapter extends BaseAdapter {
 
-    private static final String TAG = "Recipe Wizard : IngredientsCategoryAdapter";
+    private static final String TAG = "Recipe Wizard : Adapter";
+
+    static final int NOT_FOUND = -1;
 
     private final List<IngredientsCategory> mItems = new ArrayList<IngredientsCategory>();
     private final Context mContext;
@@ -41,6 +45,18 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public int getCategoryIndex(String categoryName) {
+        int index;
+        for (index = 0; index < mItems.size(); index++) {
+            if (mItems.get(index).getCategoryName().equals(categoryName)) {
+                return index;
+            }
+        }
+        return NOT_FOUND;
+    }
+
+
+
     // Returns the number of IngredientsCategories
     @Override
     public int getCount() {
@@ -61,6 +77,7 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
+        private RelativeLayout ingredientsCategoryRelativeLayout;
         private ImageView ingredientsCategoryIconImageView;
         private TextView ingredientsCategoryNameTextView;
         private TextView ingredientsCategoryCountTextView;
@@ -74,13 +91,14 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         final IngredientsCategory ingredientsCategory = mItems.get(position);
 
         RelativeLayout itemLayout = (RelativeLayout) convertView;
-        ViewHolder holder;
+        final ViewHolder holder;
 
         // Inflate the View for this Ingredients Category from ingredients_category.xml
         if (itemLayout == null) {
             itemLayout = (RelativeLayout) LayoutInflater.from(mContext).inflate(
                     R.layout.ingredients_category, parent, false);
             holder = new ViewHolder();
+            holder.ingredientsCategoryRelativeLayout = (RelativeLayout) itemLayout.findViewById(R.id.ingredientsCategoryRelativeLayout);
             holder.ingredientsCategoryIconImageView = (ImageView) itemLayout.findViewById(R.id.ingredientsCategoryIcon);
             holder.ingredientsCategoryNameTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryName);
             holder.ingredientsCategoryCountTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryCount);
@@ -95,8 +113,17 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Display Ingredients Category name in TextView
         holder.ingredientsCategoryNameTextView.setText(ingredientsCategory.getCategoryName());
 
-        // Display Ingredients Category checked count in TextView
-        holder.ingredientsCategoryCountTextView.setText(ingredientsCategory.getCheckedCount() + R.string.checked_count);
+        // Set equal Width and Height for Categories
+        holder.ingredientsCategoryRelativeLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup.LayoutParams mParams;
+                mParams = holder.ingredientsCategoryRelativeLayout.getLayoutParams();
+                mParams.height = holder.ingredientsCategoryRelativeLayout.getWidth();
+                holder.ingredientsCategoryRelativeLayout.setLayoutParams(mParams);
+                holder.ingredientsCategoryRelativeLayout.postInvalidate();
+            }
+        });
 
         // TODO - get category icon
 
