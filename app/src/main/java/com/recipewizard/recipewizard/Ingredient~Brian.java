@@ -11,25 +11,36 @@ import android.os.Parcel;
 
 class Ingredient implements Parcelable{
 
+    public static final String ITEM_SEP = System.getProperty("line.separator");
+
     private String name = new String ();
     private Bitmap picture;
+    private boolean checked;
 
-    Ingredient(String name, Bitmap picture){
+    Ingredient(String name, Bitmap picture, boolean checked){
         this.name = name;
         this.picture = picture;
+        this.checked = checked;
     }
     Ingredient(Parcel parcel){
         this.name = parcel.readString();
         this.picture = (Bitmap) parcel.readParcelable(Bitmap.class.getClassLoader());
+        this.checked = parcel.readByte() != 0;
     }
 
     public String getName () {return name;}
     public void setName (String name) {this.name = name;}
     public Bitmap getPicture () {return picture;}
     public void setPicture (Bitmap picture) {this.picture = picture;}
+    public boolean getCheckedStatus() {
+        return checked;
+    }
+    public void setCheckedStatus(boolean checked) {
+        this.checked = checked;
+    }
 
-    public String toString(){
-        return name;
+    public String toString() {
+        return name + ": " + checked + ITEM_SEP;
     }
 
     @Override
@@ -41,6 +52,7 @@ class Ingredient implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeValue(picture);
+        dest.writeByte((byte) (checked ? 1 : 0));
     }
 
     public static Creator<Ingredient> CREATOR = new Creator<Ingredient>() {

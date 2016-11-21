@@ -35,51 +35,51 @@ public class MasterIngredientsList implements Serializable {
     public MasterIngredientsList() {
         // Dry Goods
         ArrayList<Ingredient> ingredientsListDryGoods = new ArrayList<Ingredient>();
-        ingredientsListDryGoods.add(new Ingredient("Pasta", false));
-        ingredientsListDryGoods.add(new Ingredient("Rice", false));
-        ingredientsListDryGoods.add(new Ingredient("Oats", false));
+        ingredientsListDryGoods.add(new Ingredient("Pasta", null, false));
+        ingredientsListDryGoods.add(new Ingredient("Rice", null, false));
+        ingredientsListDryGoods.add(new Ingredient("Oats", null, false));
         masterIngredientsList.put(DRY_GOODS, ingredientsListDryGoods);
 
         // Meats
         ArrayList<Ingredient> ingredientsListMeats = new ArrayList<Ingredient>();
-        ingredientsListMeats.add(new Ingredient("Chicken", false));
-        ingredientsListMeats.add(new Ingredient("Beef", false));
-        ingredientsListMeats.add(new Ingredient("Lamb", false));
+        ingredientsListMeats.add(new Ingredient("Chicken", null, false));
+        ingredientsListMeats.add(new Ingredient("Beef", null, false));
+        ingredientsListMeats.add(new Ingredient("Lamb", null, false));
         masterIngredientsList.put(MEATS, ingredientsListMeats);
 
         // Fruits
         ArrayList<Ingredient> ingredientsListFruits = new ArrayList<Ingredient>();
-        ingredientsListFruits.add(new Ingredient("Apple", false));
-        ingredientsListFruits.add(new Ingredient("Banana", false));
-        ingredientsListFruits.add(new Ingredient("Grapes", false));
+        ingredientsListFruits.add(new Ingredient("Apple", null, false));
+        ingredientsListFruits.add(new Ingredient("Banana", null, false));
+        ingredientsListFruits.add(new Ingredient("Grapes", null, false));
         masterIngredientsList.put(FRUITS, ingredientsListFruits);
 
         // Vegetables
         ArrayList<Ingredient> ingredientsListVegetables = new ArrayList<Ingredient>();
-        ingredientsListVegetables.add(new Ingredient("Broccoli", false));
-        ingredientsListVegetables.add(new Ingredient("Kale", false));
-        ingredientsListVegetables.add(new Ingredient("Carrots", false));
+        ingredientsListVegetables.add(new Ingredient("Broccoli", null, false));
+        ingredientsListVegetables.add(new Ingredient("Kale", null, false));
+        ingredientsListVegetables.add(new Ingredient("Carrots", null, false));
         masterIngredientsList.put(VEGETABLES, ingredientsListVegetables);
 
         // Spices and Herbs
         ArrayList<Ingredient> ingredientsListSpicesHerbs = new ArrayList<Ingredient>();
-        ingredientsListSpicesHerbs.add(new Ingredient("Oregano", false));
-        ingredientsListSpicesHerbs.add(new Ingredient("Basil", false));
-        ingredientsListSpicesHerbs.add(new Ingredient("Oats", false));
+        ingredientsListSpicesHerbs.add(new Ingredient("Oregano", null, false));
+        ingredientsListSpicesHerbs.add(new Ingredient("Basil", null, false));
+        ingredientsListSpicesHerbs.add(new Ingredient("Oats", null, false));
         masterIngredientsList.put(SPICES, ingredientsListSpicesHerbs);
 
         // Baking
         ArrayList<Ingredient> ingredientsListBaking = new ArrayList<Ingredient>();
-        ingredientsListBaking.add(new Ingredient("Flour", false));
-        ingredientsListBaking.add(new Ingredient("Yeast", false));
-        ingredientsListBaking.add(new Ingredient("Baking Soda", false));
+        ingredientsListBaking.add(new Ingredient("Flour", null, false));
+        ingredientsListBaking.add(new Ingredient("Yeast", null, false));
+        ingredientsListBaking.add(new Ingredient("Baking Soda", null, false));
         masterIngredientsList.put(BAKING, ingredientsListBaking);
 
         // Oils and Condiments
         ArrayList<Ingredient> ingredientsListOilsCondiments = new ArrayList<Ingredient>();
-        ingredientsListOilsCondiments.add(new Ingredient("Olive Oil", false));
-        ingredientsListOilsCondiments.add(new Ingredient("Ketchup", false));
-        ingredientsListOilsCondiments.add(new Ingredient("Vinegar", false));
+        ingredientsListOilsCondiments.add(new Ingredient("Olive Oil", null, false));
+        ingredientsListOilsCondiments.add(new Ingredient("Ketchup", null, false));
+        ingredientsListOilsCondiments.add(new Ingredient("Vinegar", null, false));
         masterIngredientsList.put(CONDIMENTS, ingredientsListOilsCondiments);
     }
 
