@@ -103,6 +103,18 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
             holder.ingredientsCategoryNameTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryName);
             holder.ingredientsCategoryCountTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryCount);
             itemLayout.setTag(holder);
+            holder.ingredientsCategoryIconImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            // Set equal Width and Height for Categories
+            holder.ingredientsCategoryRelativeLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    ViewGroup.LayoutParams mParams;
+                    mParams = holder.ingredientsCategoryRelativeLayout.getLayoutParams();
+                    mParams.height = holder.ingredientsCategoryRelativeLayout.getWidth();
+                    holder.ingredientsCategoryRelativeLayout.setLayoutParams(mParams);
+                    holder.ingredientsCategoryRelativeLayout.postInvalidate();
+                }
+            });
         }
         else {
             itemLayout = (RelativeLayout) convertView;
@@ -116,21 +128,38 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Display Ingredients Category checked count in TextView
         holder.ingredientsCategoryCountTextView.setText(mContext.getString(R.string.checked_count, ingredientsCategory.getCheckedCount()));
 
-        // Set equal Width and Height for Categories
-        holder.ingredientsCategoryRelativeLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup.LayoutParams mParams;
-                mParams = holder.ingredientsCategoryRelativeLayout.getLayoutParams();
-                mParams.height = holder.ingredientsCategoryRelativeLayout.getWidth();
-                holder.ingredientsCategoryRelativeLayout.setLayoutParams(mParams);
-                holder.ingredientsCategoryRelativeLayout.postInvalidate();
-            }
-        });
-
-        // TODO - get category icon
+        // get category icon
+        switch (ingredientsCategory.getCategoryName()) {
+            case MasterIngredientsList.BAKING:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[0]);
+                break;
+            case MasterIngredientsList.CONDIMENTS:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[1]);
+                break;
+            case MasterIngredientsList.DRY_GOODS:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[2]);
+                break;
+            case MasterIngredientsList.FRUITS:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[3]);
+                break;
+            case MasterIngredientsList.SPICES:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[4]);
+                break;
+            case MasterIngredientsList.MEATS:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[5]);
+                break;
+            case MasterIngredientsList.VEGETABLES:
+                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[6]);
+                break;
+        }
 
         return itemLayout;
     }
+
+    // references to icon images
+    private Integer[] mIconIds = {
+            R.drawable.baking, R.drawable.condiments, R.drawable.drygoods,
+            R.drawable.fruits, R.drawable.herbs, R.drawable.meats, R.drawable.vegetables
+    };
 
 }

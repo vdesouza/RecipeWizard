@@ -2,15 +2,16 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="50dp">
 
     <!-- TextView to hold Ingredients List header -->
     <TextView android:id="@+id/ingredientsTextView"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="top|center"
-              android:textSize="24sp"
-              android:padding="32dp" />
+              android:padding="56dp"
+              android:textSize="20sp"/>
 
     <!-- GridView that holds ingredients categories -->
     <GridView android:id="@+id/ingredientsGridView"

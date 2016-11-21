@@ -17,13 +17,13 @@ public class MasterIngredientsList implements Parcelable {
             new HashMap<String, ArrayList<Ingredient>>();
 
     // List default generated categories
-    private final String DRY_GOODS = "Dry Goods";
-    private final String MEATS = "Meats";
-    private final String FRUITS = "Fruits";
-    private final String VEGETABLES = "Vegetables";
-    private final String SPICES = "Spices and Herbs";
-    private final String BAKING = "Baking";
-    private final String CONDIMENTS = "Oils and Condiments";
+    static final String DRY_GOODS = "Dry Goods";
+    static final String MEATS = "Meats";
+    static final String FRUITS = "Fruits";
+    static final String VEGETABLES = "Vegetables";
+    static final String SPICES = "Spices and Herbs";
+    static final String BAKING = "Baking";
+    static final String CONDIMENTS = "Oils and Condiments";
 
     public MasterIngredientsList() {
         // Dry Goods

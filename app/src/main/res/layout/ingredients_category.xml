@@ -4,13 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ingredientsCategoryRelativeLayout"
-    >
+    android:gravity="center"
+    android:paddingTop="15dp"
+    android:background="#cfd8dc">
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ingredientsCategoryIcon"/>
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:adjustViewBounds="true"
+        android:id="@+id/ingredientsCategoryIcon"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -20,7 +24,6 @@
         android:layout_below="@+id/ingredientsCategoryIcon"
         android:textAlignment="center"
         android:textStyle="normal|bold"
-        android:gravity="center"
         android:foregroundGravity="center"/>
 
     <TextView
