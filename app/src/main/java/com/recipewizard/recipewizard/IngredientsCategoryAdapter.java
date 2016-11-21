@@ -113,6 +113,9 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Display Ingredients Category name in TextView
         holder.ingredientsCategoryNameTextView.setText(ingredientsCategory.getCategoryName());
 
+        // Display Ingredients Category checked count in TextView
+        holder.ingredientsCategoryCountTextView.setText(mContext.getString(R.string.checked_count, ingredientsCategory.getCheckedCount()));
+
         // Set equal Width and Height for Categories
         holder.ingredientsCategoryRelativeLayout.post(new Runnable() {
             @Override

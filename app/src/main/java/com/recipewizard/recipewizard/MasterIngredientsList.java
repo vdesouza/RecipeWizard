@@ -1,14 +1,7 @@
 package com.recipewizard.recipewizard;
 
-import android.content.Context;
-import android.util.Log;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -17,7 +10,7 @@ import java.util.Set;
  * Created by vdesouza on 11/18/16.
  */
 
-public class MasterIngredientsList implements Serializable {
+public class MasterIngredientsList implements Parcelable {
 
     // HashMap that is returned
     private HashMap<String, ArrayList<Ingredient>> masterIngredientsList =
@@ -128,7 +121,6 @@ public class MasterIngredientsList implements Serializable {
 
     public String toString() {
         String ingredientsString = "Master Ingredient List: \n";
-
         for (String category : masterIngredientsList.keySet()) {
             ingredientsString += category + ": \n";
             for (Ingredient i : masterIngredientsList.get(category)) {
@@ -136,7 +128,34 @@ public class MasterIngredientsList implements Serializable {
             }
             ingredientsString += "\n";
         }
-
         return ingredientsString;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeValue(masterIngredientsList);
+    }
+
+    private MasterIngredientsList(Parcel in) {
+        masterIngredientsList = (HashMap<String, ArrayList<Ingredient>>) in.readValue(HashMap.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<MasterIngredientsList> CREATOR
+            = new Parcelable.Creator<MasterIngredientsList>() {
+
+        @Override
+        public MasterIngredientsList createFromParcel(Parcel in) {
+            return new MasterIngredientsList(in);
+        }
+
+        @Override
+        public MasterIngredientsList[] newArray(int size) {
+            return new MasterIngredientsList[size];
+        }
+    };
 }

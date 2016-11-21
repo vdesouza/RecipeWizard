@@ -11,6 +11,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,15 +20,23 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         private static final String INGREDIENTS_LIST = "IngredientsList";
         private static final String CATEGORY_NAME = "CategoryName";
         private static final String CATEGORY_INDEX = "CategoryIndex";
-        static final String FILE_NAME = "master_ingredient_list.ser";
+        private static final String FILE_NAME = "MasterIngredientsList.json";
 
         TextView mIngredientsTextView;
         GridView mIngredientsGridView;
@@ -129,7 +138,10 @@ public class MainActivity extends AppCompatActivity {
             mAdapter = new IngredientsCategoryAdapter(getActivity());
 
             // Create the list of ingredients
-            mMasterIngredientsList = new MasterIngredientsList();
+            load();
+            if (mMasterIngredientsList == null) {
+                mMasterIngredientsList = new MasterIngredientsList();
+            }
 
             // Add to adapter list
             for (String category : mMasterIngredientsList.getAllCategories()) {
@@ -190,11 +202,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onResume() {
             super.onResume();
-            Log.i(TAG, "onResume");
-            // Load saved Ingredients, if necessary
-            if (mAdapter.getCount() == 0) {
-                load();
-            }
+//            Log.i(TAG, "onResume");
+//            // Load saved Ingredients, if necessary
+//            if (mAdapter.getCount() == 0) {
+//                load();
+//            }
         }
 
         @Override
@@ -207,35 +219,39 @@ public class MainActivity extends AppCompatActivity {
 
         // Save Ingredients list to file
         private void save() {
+            PrintWriter writer = null;
             try {
-                FileOutputStream fileOutputStream = getActivity().openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                FileOutputStream fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
+                writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                        fos)));
 
-                objectOutputStream.writeObject(mMasterIngredientsList.getMasterList());
+                Gson gson = new Gson();
+                String json = gson.toJson(mMasterIngredientsList);
+                writer.print(json);
 
-                objectOutputStream.close();
-                fileOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (null != writer) {
+                    writer.close();
+                }
             }
         }
 
         // Load stored Ingredients
         private void load() {
             try {
-                FileInputStream fileInputStream  = new FileInputStream(FILE_NAME);
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
-                mMasterIngredientsList = new MasterIngredientsList((HashMap) objectInputStream.readObject());
-                for (String category : mMasterIngredientsList.getAllCategories()) {
-                    mAdapter.add(new IngredientsCategory(category, String.valueOf(mMasterIngredientsList.getCheckedCount(category))));
-                }
+                Gson gson = new Gson();
 
-                objectInputStream.close();
-                fileInputStream.close();
+                FileInputStream fis = getActivity().openFileInput(FILE_NAME);
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+                mMasterIngredientsList = gson.fromJson(br, MasterIngredientsList.class);
+
+                Log.i(TAG, mMasterIngredientsList.toString());
+
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
