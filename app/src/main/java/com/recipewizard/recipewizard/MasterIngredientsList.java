@@ -26,6 +26,7 @@ public class MasterIngredientsList implements Parcelable {
     static final String CONDIMENTS = "Oils and Condiments";
 
     public MasterIngredientsList() {
+
         // Dry Goods
         ArrayList<Ingredient> ingredientsListDryGoods = new ArrayList<Ingredient>();
         ingredientsListDryGoods.add(new Ingredient("Pasta", null, false));
@@ -74,6 +75,8 @@ public class MasterIngredientsList implements Parcelable {
         ingredientsListOilsCondiments.add(new Ingredient("Ketchup", null, false));
         ingredientsListOilsCondiments.add(new Ingredient("Vinegar", null, false));
         masterIngredientsList.put(CONDIMENTS, ingredientsListOilsCondiments);
+
+
     }
 
     public MasterIngredientsList(HashMap list) {

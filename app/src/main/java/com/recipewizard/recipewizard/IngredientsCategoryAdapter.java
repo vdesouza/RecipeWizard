@@ -1,6 +1,9 @@
 package com.recipewizard.recipewizard;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,7 +120,6 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
             });
         }
         else {
-            itemLayout = (RelativeLayout) convertView;
             holder = (ViewHolder) itemLayout.getTag();
         }
 
@@ -151,6 +153,8 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
             case MasterIngredientsList.VEGETABLES:
                 holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[6]);
                 break;
+            default:
+                break;
         }
 
         return itemLayout;
@@ -161,5 +165,11 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
             R.drawable.baking, R.drawable.condiments, R.drawable.drygoods,
             R.drawable.fruits, R.drawable.herbs, R.drawable.meats, R.drawable.vegetables
     };
+
+    private Drawable resize(Drawable image) {
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
+        return new BitmapDrawable(mContext.getResources(), bitmapResized);
+    }
 
 }
