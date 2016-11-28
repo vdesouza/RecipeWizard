@@ -14,16 +14,19 @@ class Ingredient implements Parcelable{
     private String name = new String ();
     private Bitmap picture;
     private boolean checked;
+    private String category = new String();
 
-    Ingredient(String name, Bitmap picture, boolean checked){
+    Ingredient(String name, Bitmap picture, boolean checked, String category){
         this.name = name;
         this.picture = picture;
         this.checked = checked;
+        this.category = category;
     }
     Ingredient(Parcel parcel){
         this.name = parcel.readString();
         this.picture = (Bitmap) parcel.readParcelable(Bitmap.class.getClassLoader());
         this.checked = parcel.readByte() != 0;
+        this.category = parcel.readString();
     }
 
     public String getName () {return name;}
@@ -36,9 +39,11 @@ class Ingredient implements Parcelable{
     public void setCheckedStatus(boolean checked) {
         this.checked = checked;
     }
+    public String getCategory() {return category;}
+    public void setCategory(String category) {this.category = category;}
 
     public String toString() {
-        return name + "\n" + checked + "\n";
+        return name + "\n" + checked + "\n" + category + "\n";
     }
 
     @Override
@@ -51,6 +56,7 @@ class Ingredient implements Parcelable{
         dest.writeString(name);
         dest.writeValue(picture);
         dest.writeByte((byte) (checked ? 1 : 0));
+        dest.writeString(category);
     }
 
     public static Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
