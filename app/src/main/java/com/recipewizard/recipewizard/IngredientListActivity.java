@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -72,6 +73,7 @@ public class IngredientListActivity extends AppCompatActivity {
         mIngredientsListView.addHeaderView(headerView);
         mIngredientsListView.addFooterView(footerView);
 
+
         // Attach Listener to FooterView
         footerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,8 +81,9 @@ public class IngredientListActivity extends AppCompatActivity {
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
 
-                alert.setTitle("Title");
-                alert.setMessage("Message");
+                alert.setTitle("Add new ingredient?");
+                alert.setMessage("Type in name of new ingredient for this category.\n" +
+                        "Caution: not all ingredient names may work with recipe search API.");
 
                 // Set an EditText view to get user input
                 final EditText input = new EditText(v.getContext());
@@ -102,6 +105,32 @@ public class IngredientListActivity extends AppCompatActivity {
                 });
 
                 alert.show();
+            }
+        });
+
+        // long click to delete an item
+        mIngredientsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(parent.getContext());
+                alert.setIcon(android.R.drawable.ic_dialog_alert);
+                alert.setTitle("Delete Ingredient?");
+                alert.setMessage("Are you sure? This cannot be undone.");
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Ingredient ingredientToRemove = (Ingredient) mAdapter.getItem(position - 1);
+                        mIngredientsList.remove(ingredientToRemove);
+                        newIngredientsAddedList.remove(ingredientToRemove);
+                        mAdapter.remove(ingredientToRemove);
+                    }
+                });
+                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //canceled
+                    }
+                });
+                alert.show();
+                return true;
             }
         });
 

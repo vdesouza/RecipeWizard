@@ -129,8 +129,10 @@ public class MasterIngredientsList implements Parcelable {
     }
 
     public void updateList(String category, ArrayList<Ingredient> ingredientsList) {
-        // updates an existing ingredients list if category is present, or creates new category
-        masterIngredientsList.put(category, ingredientsList);
+
+            // updates an existing ingredients list if category is present, or creates new category
+            masterIngredientsList.put(category, ingredientsList);
+
     }
 
     public String toString() {

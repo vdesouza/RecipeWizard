@@ -27,6 +27,11 @@ public class IngredientsCategory {
         // TODO - Category Icon
     }
 
+    IngredientsCategory(String name) {
+        this.mCategoryName = name;
+        // TODO - Category Icon
+    }
+
     // Create a new IngredientsCategory from data packaged in an Intent
     IngredientsCategory(Intent intent) {
         mCategoryName = intent.getStringExtra(IngredientsCategory.CATEGORY_NAME);

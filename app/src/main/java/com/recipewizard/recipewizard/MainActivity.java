@@ -1,9 +1,10 @@
 package com.recipewizard.recipewizard;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,55 +12,49 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import static android.R.attr.focusable;
+import static android.R.attr.tag;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Recipe Wizard";
 
+    // IDs for menu items
+    private static final int MENU_RESET_INGREDIENTS = Menu.FIRST;
+
     // Tabbed main activity and swipe between fragments adapted from these two tutorials:
     // https://www.youtube.com/watch?v=zQekzaAgIlQ
     // https://developer.android.com/training/implementing-navigation/lateral.html#tabs
 
     // ViewPager that will display each section of the app when swiped
-    ViewPager mViewPager;
+    static ViewPager mViewPager;
 
     // PageAdapter that will provide fragments to each of the two main sections of the app
     PagerAdapter mPagerAdapter;
 
     // TabLayout that show the two tabs
     TabLayout tabLayout;
+
+    // Master list of ingredients
+    public static MasterIngredientsList mMasterIngredientsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
         public FixedTabsPagerAdapter(FragmentManager fm) {
            super(fm);
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            // POSITION_NONE makes it possible to reload the PagerAdapter
+            return POSITION_NONE;
+        }
+
         @Override
         public int getCount() {
             return 2;
@@ -109,8 +111,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Master list of ingredients
-    public static MasterIngredientsList mMasterIngredientsList;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // only show options menu on portrait view
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE, MENU_RESET_INGREDIENTS, Menu.NONE, getResources().getString(R.string.reset_ingredient_list));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_RESET_INGREDIENTS:
+                showIngredientsResetDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showIngredientsResetDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Reset all ingredients back to default?");
+        alert.setMessage("This will delete all added ingredients and categories. This will also uncheck all ingredients.");
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                mMasterIngredientsList = new MasterIngredientsList();
+
+                // clear saved ingredients
+                SharedPreferences.Editor editor = getSharedPreferences("pref", Context.MODE_PRIVATE).edit();
+                editor.clear();
+                editor.apply();
+
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+
+
 
     // Fragment view for Ingredients list
     public static class IngredientsListFragment extends Fragment {
@@ -119,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         private static final String INGREDIENTS_LIST = "IngredientsList";
         private static final String CATEGORY_NAME = "CategoryName";
         private static final String CATEGORY_INDEX = "CategoryIndex";
-        private static final String FILE_NAME = "MasterIngredientsList.json";
 
         TextView mIngredientsTextView;
         GridView mIngredientsGridView;
@@ -140,11 +188,10 @@ public class MainActivity extends AppCompatActivity {
 
             mIngredientsTextView.setText(R.string.ingredients_header);
 
-
             // Create a new IngredientsCategoryAdapter for the GridView
             mAdapter = new IngredientsCategoryAdapter(getActivity());
 
-            // Create the list of ingredients
+            // Create the list of ingredients (load a saved one or make a new one)
             String hasSavedList = prefs.getString("HasSavedList", "");
             if (hasSavedList.equals("True")) {
                 load();
@@ -153,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.i(TAG, "List Loaded:\n " + mMasterIngredientsList.toString());
+
+            mAdapter.add(new IngredientsCategory("Add New Category"));
 
             // Add to adapter list
             for (String category : mMasterIngredientsList.getAllCategories()) {
@@ -166,17 +215,45 @@ public class MainActivity extends AppCompatActivity {
             mIngredientsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                    // Package list to build listview
                     String categoryName = ((TextView) v.findViewById(R.id.ingredientsCategoryName)).getText().toString();
-                    ArrayList<Ingredient> listToPackage = mMasterIngredientsList.getCategoryList(categoryName);
-                    int index = parent.indexOfChild(v);
+                    // if add category is selected prompt for new catergory name
+                    if (categoryName.equals("Add New Category")) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
 
-                    // Go to Ingredients List Activity for that category
-                    Intent explicitIntent = new Intent(getActivity(), IngredientListActivity.class);
-                    explicitIntent.putExtra(CATEGORY_NAME, categoryName);
-                    explicitIntent.putExtra(INGREDIENTS_LIST, listToPackage);
-                    explicitIntent.putExtra(CATEGORY_INDEX, index);
-                    startActivityForResult(explicitIntent, INGREDIENTS_LIST_REQUEST );
+                        alert.setTitle("Add new ingredient category?");
+                        alert.setMessage("Type in name of new category.");
+
+                        // Set an EditText view to get user input
+                        final EditText input = new EditText(v.getContext());
+                        alert.setView(input);
+
+                        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String newCategoryName = (input.getText().toString());
+                                mMasterIngredientsList.updateList(newCategoryName, new ArrayList<Ingredient>());
+                                mAdapter.add(new IngredientsCategory(newCategoryName, "0"));
+                            }
+                        });
+
+                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // Canceled.
+                            }
+                        });
+
+                        alert.show();
+                    } else {
+                        // Package list to build listview of ingredients
+                        ArrayList<Ingredient> listToPackage = mMasterIngredientsList.getCategoryList(categoryName);
+                        int index = parent.indexOfChild(v);
+
+                        // Go to Ingredients List Activity for that category
+                        Intent explicitIntent = new Intent(getActivity(), IngredientListActivity.class);
+                        explicitIntent.putExtra(CATEGORY_NAME, categoryName);
+                        explicitIntent.putExtra(INGREDIENTS_LIST, listToPackage);
+                        explicitIntent.putExtra(CATEGORY_INDEX, index);
+                        startActivityForResult(explicitIntent, INGREDIENTS_LIST_REQUEST);
+                    }
                 }
             });
 
@@ -206,8 +283,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-
-
         }
 
         @Override
@@ -226,6 +301,14 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "onPause");
             // Save ingredients
             save();
+        }
+
+        private int getAllCheckedCount() {
+            int count = 0;
+            for (String category : mMasterIngredientsList.getAllCategories()) {
+                count += mMasterIngredientsList.getCheckedCount(category);
+            }
+            return count;
         }
 
         // Save Ingredients list to shared preferences

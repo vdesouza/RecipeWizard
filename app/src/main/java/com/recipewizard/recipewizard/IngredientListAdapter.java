@@ -40,6 +40,12 @@ public class IngredientListAdapter extends BaseAdapter implements Filterable {
         notifyDataSetChanged();
     }
 
+    public void remove(Ingredient position) {
+        mItems.remove(position);
+        mDisplayedItems.remove(position);
+        notifyDataSetChanged();
+    }
+
     // Clears the list adapter of all items.
     public void clear() {
         mItems.clear();
