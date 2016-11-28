@@ -1,7 +1,16 @@
 package com.recipewizard.recipewizard;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.Gson;
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -24,6 +33,8 @@ public class MasterIngredientsList implements Parcelable {
     static final String SPICES = "Spices and Herbs";
     static final String BAKING = "Baking";
     static final String CONDIMENTS = "Oils and Condiments";
+
+
 
     public MasterIngredientsList() {
 
@@ -123,9 +134,10 @@ public class MasterIngredientsList implements Parcelable {
     }
 
     public String toString() {
-        String ingredientsString = "Master Ingredient List: \n";
+        String ingredientsString = "";
         for (String category : masterIngredientsList.keySet()) {
-            ingredientsString += category + ": \n";
+            ingredientsString += "Category:\n";
+            ingredientsString += category + "\n";
             for (Ingredient i : masterIngredientsList.get(category)) {
                 ingredientsString += i.toString();
             }

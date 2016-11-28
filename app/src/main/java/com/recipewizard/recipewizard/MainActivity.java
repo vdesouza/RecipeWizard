@@ -2,6 +2,7 @@ package com.recipewizard.recipewizard;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.Tag;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -124,8 +127,12 @@ public class MainActivity extends AppCompatActivity {
         // Adapter for GridView
         IngredientsCategoryAdapter mAdapter;
 
+        SharedPreferences prefs;
+
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            prefs = this.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
 
             View rootView = inflater.inflate(R.layout.ingredients_category_fragment, container, false);
             mIngredientsTextView = (TextView) rootView.findViewById(R.id.ingredientsTextView);
@@ -138,10 +145,14 @@ public class MainActivity extends AppCompatActivity {
             mAdapter = new IngredientsCategoryAdapter(getActivity());
 
             // Create the list of ingredients
-            load();
-            if (mMasterIngredientsList == null) {
+            String hasSavedList = prefs.getString("HasSavedList", "");
+            if (hasSavedList.equals("True")) {
+                load();
+            } else if (mMasterIngredientsList == null) {
                 mMasterIngredientsList = new MasterIngredientsList();
             }
+
+            Log.i(TAG, "List Loaded:\n " + mMasterIngredientsList.toString());
 
             // Add to adapter list
             for (String category : mMasterIngredientsList.getAllCategories()) {
@@ -217,42 +228,62 @@ public class MainActivity extends AppCompatActivity {
             save();
         }
 
-        // Save Ingredients list to file
+        // Save Ingredients list to shared preferences
         private void save() {
-            PrintWriter writer = null;
-            try {
-                FileOutputStream fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
-                writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                        fos)));
-
-                Gson gson = new Gson();
-                String json = gson.toJson(mMasterIngredientsList);
-                writer.print(json);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (null != writer) {
-                    writer.close();
-                }
-            }
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("MasterIngredientsList", mMasterIngredientsList.toString());
+            editor.putString("HasSavedList", "True");
+            editor.commit();
         }
+
 
         // Load stored Ingredients
         private void load() {
+            BufferedReader reader = null;
             try {
+                String loadedPrefs = prefs.getString("MasterIngredientsList", "");
+                reader = new BufferedReader(new StringReader(loadedPrefs));
 
-                Gson gson = new Gson();
+                String header;
+                String categoryName;
+                String ingredientName;
+                String checked;
 
-                FileInputStream fis = getActivity().openFileInput(FILE_NAME);
-                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                Log.i(TAG, loadedPrefs);
 
-                mMasterIngredientsList = gson.fromJson(br, MasterIngredientsList.class);
+                while (null != reader.readLine()) {
+                    ArrayList<Ingredient> ingredientsList = new ArrayList<Ingredient>();
+                    categoryName = reader.readLine();
+                    Log.i(TAG, "categoryName = " + categoryName);
+                    while ((null != (ingredientName = reader.readLine())) && !(ingredientName.equals(""))) {
+                        Log.i(TAG, "ingredientName = " + ingredientName);
+                        checked = reader.readLine();
+                        Log.i(TAG, "checked = " + checked);
+                        Ingredient ingredient = new Ingredient(ingredientName, null, Boolean.valueOf(checked));
+                        ingredientsList.add(ingredient);
+                    }
 
-                Log.i(TAG, mMasterIngredientsList.toString());
+                    Log.i(TAG, "Category Name is " + categoryName);
+                    Log.i(TAG, "Ingredients List is: " + ingredientsList.toString());
 
+                    if (mMasterIngredientsList == null) {
+                        mMasterIngredientsList = new MasterIngredientsList();
+                    }
+                    if (null != categoryName && ingredientsList.size() != 0) {
+                        mMasterIngredientsList.updateList(categoryName, ingredientsList);
+                        Log.i(TAG, "Updated List: \n" + mMasterIngredientsList.toString());
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (null != reader) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/footerView"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="center_horizontal"
-          android:textSize="24sp" >
-</TextView>
+
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchEdittext"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/tap_to_search"/>

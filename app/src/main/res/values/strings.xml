@@ -4,4 +4,6 @@
     <string name="ingredients_header">Select Available Ingredients</string>
     <string name="checked_count">%1$s checked ingredients.</string>
     <string name="recipes_page_title">Recipes</string>
+    <string name="tap_to_search">Tap to search for ingredients</string>
+    <string name="add_new_ingredient">Add new ingredients</string>
 </resources>

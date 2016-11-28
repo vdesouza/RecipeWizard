@@ -4,17 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ingredientsCategoryRelativeLayout"
-    android:gravity="center"
     android:paddingTop="5dp"
     android:background="#cfd8dc">
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
         android:adjustViewBounds="true"
         android:id="@+id/ingredientsCategoryIcon"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -23,8 +23,7 @@
         android:paddingTop="10dp"
         android:layout_below="@+id/ingredientsCategoryIcon"
         android:textAlignment="center"
-        android:textStyle="normal|bold"
-        android:foregroundGravity="center"/>
+        android:textStyle="normal|bold"/>
 
     <TextView
         android:layout_width="match_parent"

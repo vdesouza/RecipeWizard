@@ -1,12 +1,19 @@
 package com.recipewizard.recipewizard;
 
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,10 +39,16 @@ public class IngredientListActivity extends AppCompatActivity {
     private String fromCategory;
     private int fromCategoryIndex;
 
+    final protected ArrayList<Ingredient> newIngredientsAddedList = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ingredients_list);
+
+        // adds back button to action bar
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mIngredientsListView = (ListView) findViewById(R.id.ingredientsListView);
 
@@ -46,30 +59,53 @@ public class IngredientListActivity extends AppCompatActivity {
         mIngredientsListView.setHeaderDividersEnabled(true);
 
         // Inflate headerView
-        TextView headerView = (TextView) getLayoutInflater().inflate(R.layout.ingredients_list_header_view, null);
+        EditText headerView = (EditText) getLayoutInflater().inflate(R.layout.ingredients_list_header_view, null);
 
         // Put divider between ToDoItems and FooterView
         mIngredientsListView.setFooterDividersEnabled(true);
 
         // Inflate headerView for footer_view.xml file
-        // TODO - make header and footer xml for lists
-        //TextView footerView = (TextView) getLayoutInflater().inflate(R.layout.ingredients_list_footer_view, null);
+        TextView footerView = (TextView) getLayoutInflater().inflate(R.layout.ingredients_list_footer_view, null);
+        footerView.setText(R.string.add_new_ingredient);
 
         // Add headerView and footerView to ListView
-        // TODO - uncomment when header and footer xml are created
         mIngredientsListView.addHeaderView(headerView);
-        //mIngredientsListView.addFooterView(footerView);
+        mIngredientsListView.addFooterView(footerView);
 
-        // TODO - Attach Listener to FooterView
-//        footerView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //DONE - TODO - Implement OnClick().
-//                Intent explicitIntent = new Intent(ToDoManagerActivity.this, AddToDoActivity.class);
-//                startActivityForResult(explicitIntent, ADD_TODO_ITEM_REQUEST);
-//            }
-//        });
+        // Attach Listener to FooterView
+        footerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
+
+                alert.setTitle("Title");
+                alert.setMessage("Message");
+
+                // Set an EditText view to get user input
+                final EditText input = new EditText(v.getContext());
+                alert.setView(input);
+
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String newIngredientName = (input.getText().toString());
+                        Ingredient newIngredient = new Ingredient(newIngredientName, null, false);
+                        newIngredientsAddedList.add(newIngredient);
+                        mAdapter.add(newIngredient);
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+
+                alert.show();
+            }
+        });
+
+        // build the list adapter from an intent
         if (getIntent().getExtras() != null) {
             mIngredientsList = (ArrayList<Ingredient>) getIntent().getSerializableExtra("IngredientsList");
             for (Ingredient i : mIngredientsList) {
@@ -78,12 +114,42 @@ public class IngredientListActivity extends AppCompatActivity {
             }
             fromCategory = getIntent().getStringExtra(CATEGORY_NAME);
             fromCategoryIndex = getIntent().getIntExtra(CATEGORY_INDEX, -1);
-            headerView.setText(fromCategory);
-
+            // sets action bar title
+            setTitle(fromCategory);
         }
+
+        // set up search function
+        // Add Text Change Listener to EditText
+        headerView.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Call back the Adapter with current character to Filter
+                mAdapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         // Attach the adapter to ListActivity's ListView
         mIngredientsListView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -91,6 +157,7 @@ public class IngredientListActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent data = new Intent();
 
+        mIngredientsList.addAll(newIngredientsAddedList);
         // Create intent to send back to main activity when back button is pressed.
         data.putExtra(CATEGORY_NAME, fromCategory);
         data.putExtra(INGREDIENTS_LIST, mIngredientsList);

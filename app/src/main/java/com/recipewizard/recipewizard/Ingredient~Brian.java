@@ -11,8 +11,6 @@ import android.os.Parcel;
 
 class Ingredient implements Parcelable{
 
-    public static final String ITEM_SEP = System.getProperty("line.separator");
-
     private String name = new String ();
     private Bitmap picture;
     private boolean checked;
@@ -40,7 +38,7 @@ class Ingredient implements Parcelable{
     }
 
     public String toString() {
-        return name + ": " + checked + ITEM_SEP;
+        return name + "\n" + checked + "\n";
     }
 
     @Override

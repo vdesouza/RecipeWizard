@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -17,11 +19,12 @@ import java.util.List;
  * Created by vdesouza on 11/17/16.
  */
 
-public class IngredientListAdapter extends BaseAdapter {
+public class IngredientListAdapter extends BaseAdapter implements Filterable {
 
     private static final String TAG = "Recipe Wizard : IngredientListAdapter";
 
-    private final List<Ingredient> mItems = new ArrayList<Ingredient>();
+    private List<Ingredient> mItems = new ArrayList<Ingredient>();
+    private List<Ingredient> mDisplayedItems = new ArrayList<Ingredient>();
     private final Context mContext;
 
     public IngredientListAdapter(Context context) {
@@ -33,25 +36,27 @@ public class IngredientListAdapter extends BaseAdapter {
 
     public void add(Ingredient item) {
         mItems.add(item);
+        mDisplayedItems.add(item);
         notifyDataSetChanged();
     }
 
     // Clears the list adapter of all items.
     public void clear() {
         mItems.clear();
+        mDisplayedItems.clear();
         notifyDataSetChanged();
     }
 
     // Returns the number of Ingredients
     @Override
     public int getCount() {
-        return mItems.size();
+        return mDisplayedItems.size();
     }
 
     // Retrieve the number of Ingredients
     @Override
     public Object getItem(int pos) {
-        return mItems.get(pos);
+        return mDisplayedItems.get(pos);
     }
 
     // Get the ID for the Ingredients
@@ -70,7 +75,7 @@ public class IngredientListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // Get the current ingredientsCategory
-        final Ingredient ingredient = mItems.get(position);
+        final Ingredient ingredient = mDisplayedItems.get(position);
 
         RelativeLayout itemLayout = (RelativeLayout) convertView;
         final IngredientListAdapter.ViewHolder holder;
@@ -105,4 +110,53 @@ public class IngredientListAdapter extends BaseAdapter {
         return itemLayout;
     }
 
+    @Override
+    public Filter getFilter() {
+        Filter filter = new Filter() {
+
+            @Override
+            protected void publishResults(CharSequence constraint,FilterResults results) {
+
+                mDisplayedItems = (ArrayList<Ingredient>) results.values; // has the filtered values
+                notifyDataSetChanged();  // notifies the data with new filtered values
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();        // Holds the results of a filtering operation in values
+                ArrayList<Ingredient> FilteredArrList = new ArrayList<Ingredient>();
+
+                if (mItems == null) {
+                    mItems = new ArrayList<Ingredient>(mDisplayedItems); // saves the original data in mOriginalValues
+                }
+
+                /********
+                 *
+                 *  If constraint(CharSequence that is received) is null returns the mOriginalValues(Original) values
+                 *  else does the Filtering and returns FilteredArrList(Filtered)
+                 *
+                 ********/
+                if (constraint == null || constraint.length() == 0) {
+                    // set the Original result to return
+                    results.count = mItems.size();
+                    results.values = mItems;
+                } else {
+                    constraint = constraint.toString().toLowerCase();
+                    for (int i = 0; i < mItems.size(); i++) {
+                        String data = mItems.get(i).getName();
+                        if (data.toLowerCase().startsWith(constraint.toString())) {
+                            FilteredArrList.add(new Ingredient(mItems.get(i).getName(), null, mItems.get(i).getCheckedStatus()));
+                        }
+                    }
+                    // set the Filtered result to return
+                    results.count = FilteredArrList.size();
+                    results.values = FilteredArrList;
+                }
+                return results;
+            }
+        };
+        return filter;
+    }
 }
+
+
