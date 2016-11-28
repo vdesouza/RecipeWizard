@@ -92,7 +92,7 @@ public class IngredientListActivity extends AppCompatActivity {
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String newIngredientName = (input.getText().toString());
-                        Ingredient newIngredient = new Ingredient(newIngredientName, null, false);
+                        Ingredient newIngredient = new Ingredient(newIngredientName, null, false, fromCategory);
                         newIngredientsAddedList.add(newIngredient);
                         mAdapter.add(newIngredient);
                     }

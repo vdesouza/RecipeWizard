@@ -21,14 +21,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import static android.R.attr.configChanges;
 import static android.R.attr.focusable;
 import static android.R.attr.tag;
 
@@ -201,7 +208,9 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i(TAG, "List Loaded:\n " + mMasterIngredientsList.toString());
 
-            mAdapter.add(new IngredientsCategory("Add New Category"));
+            // make buttons for all ingredients view and for adding new ingredients
+            mAdapter.add(new IngredientsCategory("Add New Ingredient"));
+            mAdapter.add(new IngredientsCategory("All Ingredients", String.valueOf(mMasterIngredientsList.getAllCheckedCount())));
 
             // Add to adapter list
             for (String category : mMasterIngredientsList.getAllCategories()) {
@@ -216,35 +225,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                     String categoryName = ((TextView) v.findViewById(R.id.ingredientsCategoryName)).getText().toString();
-                    // if add category is selected prompt for new catergory name
-                    if (categoryName.equals("Add New Category")) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
 
-                        alert.setTitle("Add new ingredient category?");
-                        alert.setMessage("Type in name of new category.");
-
-                        // Set an EditText view to get user input
-                        final EditText input = new EditText(v.getContext());
-                        alert.setView(input);
-
-                        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                String newCategoryName = (input.getText().toString());
-                                mMasterIngredientsList.updateList(newCategoryName, new ArrayList<Ingredient>());
-                                mAdapter.add(new IngredientsCategory(newCategoryName, "0"));
-                            }
-                        });
-
-                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                // Canceled.
-                            }
-                        });
-
-                        alert.show();
+                    if (categoryName.equals("Add New Ingredient")) {
+                        addNewIngredientDialog();
                     } else {
+                        ArrayList<Ingredient> listToPackage;
                         // Package list to build listview of ingredients
-                        ArrayList<Ingredient> listToPackage = mMasterIngredientsList.getCategoryList(categoryName);
+                        if (categoryName.equals("All Ingredients")) {
+                            listToPackage = mMasterIngredientsList.getMasterList();
+                        } else {
+                            listToPackage = mMasterIngredientsList.getCategoryList(categoryName);
+                        }
                         int index = parent.indexOfChild(v);
 
                         // Go to Ingredients List Activity for that category
@@ -254,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                         explicitIntent.putExtra(CATEGORY_INDEX, index);
                         startActivityForResult(explicitIntent, INGREDIENTS_LIST_REQUEST);
                     }
+
                 }
             });
 
@@ -267,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     String category = data.getStringExtra(CATEGORY_NAME);
                     ArrayList<Ingredient> list = (ArrayList<Ingredient>) data.getSerializableExtra(INGREDIENTS_LIST);
-                    mMasterIngredientsList.updateList(category, list);
+                    mMasterIngredientsList.updateList(list);
 
                     // update GridView to show accurate checked items count
                     int index = data.getIntExtra(CATEGORY_INDEX, IngredientsCategoryAdapter.NOT_FOUND);
@@ -275,9 +267,15 @@ public class MainActivity extends AppCompatActivity {
                         View v = mIngredientsGridView.getChildAt(index);
                         if (v != null) {
                             TextView categoryCountTextView = (TextView) v.findViewById(R.id.ingredientsCategoryCount);
+                            int count;
+                            if (category.equals("All Ingredients")) {
+                                count = mMasterIngredientsList.getAllCheckedCount();
+                            } else {
+                                count = mMasterIngredientsList.getCheckedCount(category);
+                            }
                             categoryCountTextView.setText(getActivity()
-                                    .getString(R.string.checked_count,
-                                            String.valueOf(mMasterIngredientsList.getCheckedCount(category))));
+                                    .getString(R.string.checked_count, String.valueOf(count)));
+
                         }
                     }
 
@@ -303,12 +301,65 @@ public class MainActivity extends AppCompatActivity {
             save();
         }
 
-        private int getAllCheckedCount() {
-            int count = 0;
-            for (String category : mMasterIngredientsList.getAllCategories()) {
-                count += mMasterIngredientsList.getCheckedCount(category);
-            }
-            return count;
+        private void addNewIngredientDialog() {
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+            alert.setTitle("Add new ingredient?");
+            alert.setMessage("Type in name of new ingredient and it's category.\n" +
+                    "Caution: not all ingredient names may work with recipe search API.");
+
+            // set Linear layout for text fields
+            LinearLayout layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+
+            // Set an EditText view to get user input
+            final EditText inputIngredient = new EditText(getContext());
+            inputIngredient.setHint("Enter ingredient name");
+            layout.addView(inputIngredient);
+
+            final AutoCompleteTextView inputCategory = new AutoCompleteTextView(getContext());
+            inputCategory.setHint("Enter category name");
+            inputCategory.setThreshold(0);
+            // build list of categories for autosuggestion
+            Object[] objArray = mMasterIngredientsList.getAllCategories().toArray();
+            String[] autoCompleteSuggestions = Arrays.copyOf(objArray, objArray.length, String[].class);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_singlechoice, autoCompleteSuggestions);
+            inputCategory.setAdapter(adapter);
+            layout.addView(inputCategory);
+
+            alert.setView(layout);
+
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String newIngredientName = (inputIngredient.getText().toString());
+                    String newCategoryName = (inputCategory.getText().toString());
+                    Ingredient newIngredient = new Ingredient(newIngredientName, null, false, newCategoryName);
+                    boolean newCategory = true;
+                    for (String category : mMasterIngredientsList.getAllCategories()) {
+                        if (category.equals(newCategoryName)) {
+                            newCategory = false;
+                        }
+                    }
+                    boolean added = mMasterIngredientsList.updateList(newIngredient);
+                    if (added) {
+                        Toast.makeText(getContext(), newIngredientName + " added to ingredients.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Ingredient already exists.", Toast.LENGTH_SHORT).show();
+                    }
+                    if (newCategory && added) {
+                        mAdapter.add(new IngredientsCategory(newCategoryName, String.valueOf(mMasterIngredientsList.getCheckedCount(newCategoryName))));
+
+                    }
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+
+            alert.show();
         }
 
         // Save Ingredients list to shared preferences
@@ -316,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("MasterIngredientsList", mMasterIngredientsList.toString());
             editor.putString("HasSavedList", "True");
-            editor.commit();
+            editor.apply();
         }
 
 
@@ -327,35 +378,28 @@ public class MainActivity extends AppCompatActivity {
                 String loadedPrefs = prefs.getString("MasterIngredientsList", "");
                 reader = new BufferedReader(new StringReader(loadedPrefs));
 
-                String header;
                 String categoryName;
                 String ingredientName;
                 String checked;
 
                 Log.i(TAG, loadedPrefs);
 
-                while (null != reader.readLine()) {
-                    ArrayList<Ingredient> ingredientsList = new ArrayList<Ingredient>();
-                    categoryName = reader.readLine();
-                    Log.i(TAG, "categoryName = " + categoryName);
-                    while ((null != (ingredientName = reader.readLine())) && !(ingredientName.equals(""))) {
-                        Log.i(TAG, "ingredientName = " + ingredientName);
+                ArrayList<Ingredient> ingredientsList = new ArrayList<Ingredient>();
+                while (null != (ingredientName = reader.readLine())) {
+
+                    ingredientName = ingredientName.trim();
+                    if (!ingredientName.equals("")) {
                         checked = reader.readLine();
-                        Log.i(TAG, "checked = " + checked);
-                        Ingredient ingredient = new Ingredient(ingredientName, null, Boolean.valueOf(checked));
+                        categoryName = reader.readLine();
+                        Ingredient ingredient = new Ingredient(ingredientName, null, Boolean.valueOf(checked), categoryName);
                         ingredientsList.add(ingredient);
                     }
-
-                    Log.i(TAG, "Category Name is " + categoryName);
-                    Log.i(TAG, "Ingredients List is: " + ingredientsList.toString());
-
-                    if (mMasterIngredientsList == null) {
-                        mMasterIngredientsList = new MasterIngredientsList();
-                    }
-                    if (null != categoryName && ingredientsList.size() != 0) {
-                        mMasterIngredientsList.updateList(categoryName, ingredientsList);
-                        Log.i(TAG, "Updated List: \n" + mMasterIngredientsList.toString());
-                    }
+                }
+                Log.i(TAG, ingredientsList.toString());
+                if (mMasterIngredientsList == null) {
+                    mMasterIngredientsList = new MasterIngredientsList(ingredientsList);
+                } else {
+                    mMasterIngredientsList.updateList(ingredientsList);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

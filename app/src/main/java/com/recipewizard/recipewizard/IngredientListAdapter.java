@@ -151,7 +151,7 @@ public class IngredientListAdapter extends BaseAdapter implements Filterable {
                     for (int i = 0; i < mItems.size(); i++) {
                         String data = mItems.get(i).getName();
                         if (data.toLowerCase().startsWith(constraint.toString())) {
-                            FilteredArrList.add(new Ingredient(mItems.get(i).getName(), null, mItems.get(i).getCheckedStatus()));
+                            FilteredArrList.add(new Ingredient(mItems.get(i).getName(), null, mItems.get(i).getCheckedStatus(), mItems.get(i).getCategory()));
                         }
                     }
                     // set the Filtered result to return

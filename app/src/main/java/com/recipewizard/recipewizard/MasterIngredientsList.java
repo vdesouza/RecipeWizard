@@ -3,6 +3,7 @@ package com.recipewizard.recipewizard;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.ArraySet;
 
 import com.google.gson.Gson;
 
@@ -21,9 +22,8 @@ import java.util.Set;
 
 public class MasterIngredientsList implements Parcelable {
 
-    // HashMap that is returned
-    private HashMap<String, ArrayList<Ingredient>> masterIngredientsList =
-            new HashMap<String, ArrayList<Ingredient>>();
+    // Arraylist of Ingredient objects
+    private ArrayList<Ingredient> masterIngredientsList = new ArrayList<Ingredient>();
 
     // List default generated categories
     static final String DRY_GOODS = "Dry Goods";
@@ -39,76 +39,78 @@ public class MasterIngredientsList implements Parcelable {
     public MasterIngredientsList() {
 
         // Dry Goods
-        ArrayList<Ingredient> ingredientsListDryGoods = new ArrayList<Ingredient>();
-        ingredientsListDryGoods.add(new Ingredient("Pasta", null, false));
-        ingredientsListDryGoods.add(new Ingredient("Rice", null, false));
-        ingredientsListDryGoods.add(new Ingredient("Oats", null, false));
-        masterIngredientsList.put(DRY_GOODS, ingredientsListDryGoods);
-
+        masterIngredientsList.add(new Ingredient("Pasta", null, false, DRY_GOODS));
+        masterIngredientsList.add(new Ingredient("Rice", null, false, DRY_GOODS));
+        masterIngredientsList.add(new Ingredient("Oats", null, false, DRY_GOODS));
         // Meats
-        ArrayList<Ingredient> ingredientsListMeats = new ArrayList<Ingredient>();
-        ingredientsListMeats.add(new Ingredient("Chicken", null, false));
-        ingredientsListMeats.add(new Ingredient("Beef", null, false));
-        ingredientsListMeats.add(new Ingredient("Lamb", null, false));
-        masterIngredientsList.put(MEATS, ingredientsListMeats);
-
+        masterIngredientsList.add(new Ingredient("Chicken", null, false, MEATS));
+        masterIngredientsList.add(new Ingredient("Beef", null, false, MEATS));
+        masterIngredientsList.add(new Ingredient("Lamb", null, false, MEATS));
         // Fruits
-        ArrayList<Ingredient> ingredientsListFruits = new ArrayList<Ingredient>();
-        ingredientsListFruits.add(new Ingredient("Apple", null, false));
-        ingredientsListFruits.add(new Ingredient("Banana", null, false));
-        ingredientsListFruits.add(new Ingredient("Grapes", null, false));
-        masterIngredientsList.put(FRUITS, ingredientsListFruits);
-
+        masterIngredientsList.add(new Ingredient("Apple", null, false, FRUITS));
+        masterIngredientsList.add(new Ingredient("Banana", null, false, FRUITS));
+        masterIngredientsList.add(new Ingredient("Grapes", null, false, FRUITS));
         // Vegetables
-        ArrayList<Ingredient> ingredientsListVegetables = new ArrayList<Ingredient>();
-        ingredientsListVegetables.add(new Ingredient("Broccoli", null, false));
-        ingredientsListVegetables.add(new Ingredient("Kale", null, false));
-        ingredientsListVegetables.add(new Ingredient("Carrots", null, false));
-        masterIngredientsList.put(VEGETABLES, ingredientsListVegetables);
-
+        masterIngredientsList.add(new Ingredient("Broccoli", null, false, VEGETABLES));
+        masterIngredientsList.add(new Ingredient("Kale", null, false, VEGETABLES));
+        masterIngredientsList.add(new Ingredient("Carrots", null, false, VEGETABLES));
         // Spices and Herbs
-        ArrayList<Ingredient> ingredientsListSpicesHerbs = new ArrayList<Ingredient>();
-        ingredientsListSpicesHerbs.add(new Ingredient("Oregano", null, false));
-        ingredientsListSpicesHerbs.add(new Ingredient("Basil", null, false));
-        ingredientsListSpicesHerbs.add(new Ingredient("Oats", null, false));
-        masterIngredientsList.put(SPICES, ingredientsListSpicesHerbs);
-
+        masterIngredientsList.add(new Ingredient("Oregano", null, false, SPICES));
+        masterIngredientsList.add(new Ingredient("Basil", null, false, SPICES));
+        masterIngredientsList.add(new Ingredient("Oats", null, false, SPICES));
         // Baking
-        ArrayList<Ingredient> ingredientsListBaking = new ArrayList<Ingredient>();
-        ingredientsListBaking.add(new Ingredient("Flour", null, false));
-        ingredientsListBaking.add(new Ingredient("Yeast", null, false));
-        ingredientsListBaking.add(new Ingredient("Baking Soda", null, false));
-        masterIngredientsList.put(BAKING, ingredientsListBaking);
-
+        masterIngredientsList.add(new Ingredient("Flour", null, false, BAKING));
+        masterIngredientsList.add(new Ingredient("Yeast", null, false, BAKING));
+        masterIngredientsList.add(new Ingredient("Baking Soda", null, false, BAKING));
         // Oils and Condiments
-        ArrayList<Ingredient> ingredientsListOilsCondiments = new ArrayList<Ingredient>();
-        ingredientsListOilsCondiments.add(new Ingredient("Olive Oil", null, false));
-        ingredientsListOilsCondiments.add(new Ingredient("Ketchup", null, false));
-        ingredientsListOilsCondiments.add(new Ingredient("Vinegar", null, false));
-        masterIngredientsList.put(CONDIMENTS, ingredientsListOilsCondiments);
-
+        masterIngredientsList.add(new Ingredient("Olive Oil", null, false, CONDIMENTS));
+        masterIngredientsList.add(new Ingredient("Ketchup", null, false, CONDIMENTS));
+        masterIngredientsList.add(new Ingredient("Vinegar", null, false, CONDIMENTS));
 
     }
 
-    public MasterIngredientsList(HashMap list) {
+    public MasterIngredientsList(ArrayList<Ingredient> list) {
         masterIngredientsList = list;
     }
 
-    public HashMap getMasterList() {
+    public ArrayList<Ingredient> getMasterList() {
         return masterIngredientsList;
     }
 
-    public Set<String> getAllCategories() {
-        return masterIngredientsList.keySet();
+    public ArrayList<String> getAllCategories() {
+        ArrayList<String> categories = new ArrayList<>();
+        for (Ingredient i : masterIngredientsList) {
+            if (!categories.contains(i.getCategory())) {
+                categories.add(i.getCategory());
+            }
+        }
+        return categories;
     }
 
     public ArrayList<Ingredient> getCategoryList(String category) {
-        return masterIngredientsList.get(category);
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
+        for (Ingredient i : masterIngredientsList) {
+            if (i.getCategory().equals(category)) {
+                ingredients.add(i);
+            }
+        }
+        return ingredients;
+    }
+
+    public int getAllCheckedCount() {
+        int checkedCount = 0;
+        for (Ingredient i : masterIngredientsList) {
+            if (i.getCheckedStatus()) {
+                checkedCount++;
+            }
+        }
+        return checkedCount;
     }
 
     public int getCheckedCount(String category) {
+        ArrayList<Ingredient> categoryList = getCategoryList(category);
         int checkedCount = 0;
-        for (Ingredient i : masterIngredientsList.get(category)) {
+        for (Ingredient i : categoryList) {
             if (i.getCheckedStatus()) {
                 checkedCount++;
             }
@@ -118,32 +120,56 @@ public class MasterIngredientsList implements Parcelable {
 
     public ArrayList<Ingredient> getCheckedIngredients() {
         ArrayList<Ingredient> checkedIngredientsList = new ArrayList<Ingredient>();
-        for (String category : masterIngredientsList.keySet()) {
-            for (Ingredient i : masterIngredientsList.get(category)) {
-                if (i.getCheckedStatus()) {
-                    checkedIngredientsList.add(i);
-                }
+        for (Ingredient i : masterIngredientsList) {
+            if (i.getCheckedStatus()) {
+                checkedIngredientsList.add(i);
             }
         }
         return checkedIngredientsList;
     }
 
-    public void updateList(String category, ArrayList<Ingredient> ingredientsList) {
+    public boolean updateList(ArrayList<Ingredient> ingredientsList) {
+        // updates an existing ingredients list if category is present, or creates new ingredient
+        for (Ingredient ingredient : ingredientsList) {
+            boolean found = false;
+            int currIndex = 0;
+            while (!found && currIndex < masterIngredientsList.size()) {
+                if (ingredient.getName().equals(masterIngredientsList.get(currIndex).getName())) {
+                    masterIngredientsList.get(currIndex).setCheckedStatus(ingredient.getCheckedStatus());
+                    found = true;
+                }
+                currIndex++;
+            }
+            if (!found) {
+                masterIngredientsList.add(ingredient);
+                return true;
+            }
+        }
+        return false;
+    }
 
-            // updates an existing ingredients list if category is present, or creates new category
-            masterIngredientsList.put(category, ingredientsList);
-
+    public boolean updateList(Ingredient ingredient) {
+        // updates an existing ingredient if present, or creates new ingredient
+        boolean found = false;
+        int currIndex = 0;
+        while (!found && currIndex < masterIngredientsList.size()) {
+            if (ingredient.getName().equals(masterIngredientsList.get(currIndex).getName())) {
+                masterIngredientsList.get(currIndex).setCheckedStatus(ingredient.getCheckedStatus());
+                found = true;
+            }
+            currIndex++;
+        }
+        if (!found) {
+            masterIngredientsList.add(ingredient);
+            return true;
+        }
+        return false;
     }
 
     public String toString() {
         String ingredientsString = "";
-        for (String category : masterIngredientsList.keySet()) {
-            ingredientsString += "Category:\n";
-            ingredientsString += category + "\n";
-            for (Ingredient i : masterIngredientsList.get(category)) {
-                ingredientsString += i.toString();
-            }
-            ingredientsString += "\n";
+        for (Ingredient i : masterIngredientsList) {
+            ingredientsString += i.toString();
         }
         return ingredientsString;
     }
@@ -159,7 +185,7 @@ public class MasterIngredientsList implements Parcelable {
     }
 
     private MasterIngredientsList(Parcel in) {
-        masterIngredientsList = (HashMap<String, ArrayList<Ingredient>>) in.readValue(HashMap.class.getClassLoader());
+        masterIngredientsList = (ArrayList<Ingredient>) in.readValue(ArrayList.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<MasterIngredientsList> CREATOR
