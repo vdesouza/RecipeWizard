@@ -33,6 +33,7 @@ public class IngredientListActivity extends AppCompatActivity {
     private static final String INGREDIENTS_LIST = "IngredientsList";
     private static final String CATEGORY_NAME = "CategoryName";
     private static final String CATEGORY_INDEX = "CategoryIndex";
+    private static final String REMOVE_LIST = "RemoveList";
 
     private ListView mIngredientsListView;
     private IngredientListAdapter mAdapter;
@@ -41,6 +42,7 @@ public class IngredientListActivity extends AppCompatActivity {
     private int fromCategoryIndex;
 
     final protected ArrayList<Ingredient> newIngredientsAddedList = new ArrayList<>();
+    final protected ArrayList<Ingredient> newIngredientsRemovedList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,19 @@ public class IngredientListActivity extends AppCompatActivity {
         // Create a new IngredientListAdapter for the ListView
         mAdapter = new IngredientListAdapter(getApplicationContext());
 
+        // build the list adapter from an intent
+        if (getIntent().getExtras() != null) {
+            mIngredientsList = (ArrayList<Ingredient>) getIntent().getSerializableExtra("IngredientsList");
+            for (Ingredient i : mIngredientsList) {
+                Log.i(TAG, i.toString());
+                mAdapter.add(i);
+            }
+            fromCategory = getIntent().getStringExtra(CATEGORY_NAME);
+            fromCategoryIndex = getIntent().getIntExtra(CATEGORY_INDEX, -1);
+            // sets action bar title
+            setTitle(fromCategory);
+        }
+
         // Put divider between ToDoItems and HeaderView
         mIngredientsListView.setHeaderDividersEnabled(true);
 
@@ -69,9 +84,13 @@ public class IngredientListActivity extends AppCompatActivity {
         TextView footerView = (TextView) getLayoutInflater().inflate(R.layout.ingredients_list_footer_view, null);
         footerView.setText(R.string.add_new_ingredient);
 
+
         // Add headerView and footerView to ListView
         mIngredientsListView.addHeaderView(headerView);
-        mIngredientsListView.addFooterView(footerView);
+        if (!fromCategory.equals("All Ingredients")) {
+            // do not add it if viewing all
+            mIngredientsListView.addFooterView(footerView);
+        }
 
 
         // Attach Listener to FooterView
@@ -121,6 +140,7 @@ public class IngredientListActivity extends AppCompatActivity {
                         Ingredient ingredientToRemove = (Ingredient) mAdapter.getItem(position - 1);
                         mIngredientsList.remove(ingredientToRemove);
                         newIngredientsAddedList.remove(ingredientToRemove);
+                        newIngredientsRemovedList.add(ingredientToRemove);
                         mAdapter.remove(ingredientToRemove);
                     }
                 });
@@ -133,19 +153,6 @@ public class IngredientListActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        // build the list adapter from an intent
-        if (getIntent().getExtras() != null) {
-            mIngredientsList = (ArrayList<Ingredient>) getIntent().getSerializableExtra("IngredientsList");
-            for (Ingredient i : mIngredientsList) {
-                Log.i(TAG, i.toString());
-                mAdapter.add(i);
-            }
-            fromCategory = getIntent().getStringExtra(CATEGORY_NAME);
-            fromCategoryIndex = getIntent().getIntExtra(CATEGORY_INDEX, -1);
-            // sets action bar title
-            setTitle(fromCategory);
-        }
 
         // set up search function
         // Add Text Change Listener to EditText
@@ -191,6 +198,8 @@ public class IngredientListActivity extends AppCompatActivity {
         data.putExtra(CATEGORY_NAME, fromCategory);
         data.putExtra(INGREDIENTS_LIST, mIngredientsList);
         data.putExtra(CATEGORY_INDEX, fromCategoryIndex);
+        Log.i(TAG, "Removing (from ingredient list): " + newIngredientsRemovedList.toString());
+        data.putExtra(REMOVE_LIST, newIngredientsRemovedList);
 
         setResult(RESULT_OK, data);
         finish();

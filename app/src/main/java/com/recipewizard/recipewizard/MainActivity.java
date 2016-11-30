@@ -37,6 +37,7 @@ import java.util.Arrays;
 
 import static android.R.attr.configChanges;
 import static android.R.attr.focusable;
+import static android.R.attr.icon;
 import static android.R.attr.tag;
 
 
@@ -175,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         private static final String INGREDIENTS_LIST = "IngredientsList";
         private static final String CATEGORY_NAME = "CategoryName";
         private static final String CATEGORY_INDEX = "CategoryIndex";
+        private static final String REMOVE_LIST = "RemoveList";
 
         TextView mIngredientsTextView;
         GridView mIngredientsGridView;
@@ -183,6 +185,20 @@ public class MainActivity extends AppCompatActivity {
         IngredientsCategoryAdapter mAdapter;
 
         SharedPreferences prefs;
+
+        // List default generated categories icon names
+        static final String ADD = "add";
+        static final String ALL = "all";
+        static final String BAKING = "baking";
+        static final String CANNED = "canned";
+        static final String CONDIMENTS = "condiments";
+        static final String DAIRY = "dairy";
+        static final String FRUITS = "fruits";
+        static final String GRAINS = "grains";
+        static final String MEATS = "meats";
+        static final String SEASONING = "seasoning";
+        static final String USER = "user";
+        static final String VEGETABLES = "vegetables";
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -209,12 +225,13 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "List Loaded:\n " + mMasterIngredientsList.toString());
 
             // make buttons for all ingredients view and for adding new ingredients
-            mAdapter.add(new IngredientsCategory("Add New Ingredient"));
-            mAdapter.add(new IngredientsCategory("All Ingredients", String.valueOf(mMasterIngredientsList.getAllCheckedCount())));
+            mAdapter.add(new IngredientsCategory("Add New Ingredient", ADD));
+            mAdapter.add(new IngredientsCategory("All Ingredients", ALL));
 
             // Add to adapter list
             for (String category : mMasterIngredientsList.getAllCategories()) {
-                mAdapter.add(new IngredientsCategory(category, String.valueOf(mMasterIngredientsList.getCheckedCount(category))));
+                String iconName = getIconName(category);
+                mAdapter.add(new IngredientsCategory(category, iconName));
             }
 
             // Attach the adapter to the GridView
@@ -245,7 +262,34 @@ public class MainActivity extends AppCompatActivity {
                         explicitIntent.putExtra(CATEGORY_INDEX, index);
                         startActivityForResult(explicitIntent, INGREDIENTS_LIST_REQUEST);
                     }
+                }
+            });
 
+            // long click to delete an a category and its items
+            mIngredientsGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, final View v, final int position, long id) {
+                    final String categoryName = ((TextView) v.findViewById(R.id.ingredientsCategoryName)).getText().toString();
+                    if ((!categoryName.equals("Add New Ingredient")) && (!categoryName.equals("All Ingredients"))) {
+                        final AlertDialog.Builder alert = new AlertDialog.Builder(parent.getContext());
+                        alert.setIcon(android.R.drawable.ic_dialog_alert);
+                        alert.setTitle("Delete Category?");
+                        alert.setMessage("Are you sure? This cannot be undone. All ingredients in this category will be deleted as well.");
+                        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ArrayList<Ingredient> listToRemove = mMasterIngredientsList.getCategoryList(categoryName);
+                                mMasterIngredientsList.removeList(listToRemove);
+                                mAdapter.remove(categoryName);
+                            }
+                        });
+                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //canceled
+                            }
+                        });
+                        alert.show();
+                    }
+                    return true;
                 }
             });
 
@@ -257,28 +301,17 @@ public class MainActivity extends AppCompatActivity {
             // update master ingredient list and category count
             if (requestCode == INGREDIENTS_LIST_REQUEST) {
                 if (resultCode == RESULT_OK) {
-                    String category = data.getStringExtra(CATEGORY_NAME);
                     ArrayList<Ingredient> list = (ArrayList<Ingredient>) data.getSerializableExtra(INGREDIENTS_LIST);
+                    ArrayList<Ingredient> removeList = (ArrayList<Ingredient>) data.getSerializableExtra(REMOVE_LIST);
+                    // add new items and changes
                     mMasterIngredientsList.updateList(list);
-
-                    // update GridView to show accurate checked items count
-                    int index = data.getIntExtra(CATEGORY_INDEX, IngredientsCategoryAdapter.NOT_FOUND);
-                    if (index != IngredientsCategoryAdapter.NOT_FOUND) {
-                        View v = mIngredientsGridView.getChildAt(index);
-                        if (v != null) {
-                            TextView categoryCountTextView = (TextView) v.findViewById(R.id.ingredientsCategoryCount);
-                            int count;
-                            if (category.equals("All Ingredients")) {
-                                count = mMasterIngredientsList.getAllCheckedCount();
-                            } else {
-                                count = mMasterIngredientsList.getCheckedCount(category);
-                            }
-                            categoryCountTextView.setText(getActivity()
-                                    .getString(R.string.checked_count, String.valueOf(count)));
-
+                    // remove items that were deleted
+                    for (Ingredient ingredient : removeList) {
+                        mMasterIngredientsList.removeIngredient(ingredient);
+                        if (mMasterIngredientsList.getCategoryCount(ingredient.getCategory()) == 0) {
+                            mAdapter.remove(ingredient.getCategory());
                         }
                     }
-
                 }
             }
         }
@@ -347,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getContext(), "Ingredient already exists.", Toast.LENGTH_SHORT).show();
                     }
                     if (newCategory && added) {
-                        mAdapter.add(new IngredientsCategory(newCategoryName, String.valueOf(mMasterIngredientsList.getCheckedCount(newCategoryName))));
+                        mAdapter.add(new IngredientsCategory(newCategoryName, USER));
 
                     }
                 }
@@ -412,6 +445,43 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+        // gets icon name based on category name
+        private String getIconName(String category) {
+            String iconName;
+            switch (category) {
+                case MasterIngredientsList.BAKING:
+                    iconName = IngredientsListFragment.BAKING;
+                    break;
+                case MasterIngredientsList.CANNED:
+                    iconName = IngredientsListFragment.CANNED;
+                    break;
+                case MasterIngredientsList.CONDIMENTS:
+                    iconName = IngredientsListFragment.CONDIMENTS;
+                    break;
+                case MasterIngredientsList.DAIRY:
+                    iconName = IngredientsListFragment.DAIRY;
+                    break;
+                case MasterIngredientsList.FRUITS:
+                    iconName = IngredientsListFragment.FRUITS;
+                    break;
+                case MasterIngredientsList.GRAINS:
+                    iconName = IngredientsListFragment.GRAINS;
+                    break;
+                case MasterIngredientsList.MEATS:
+                    iconName = IngredientsListFragment.MEATS;
+                    break;
+                case MasterIngredientsList.SEASONINGS:
+                    iconName = IngredientsListFragment.SEASONING;
+                    break;
+                case MasterIngredientsList.VEGETABLES:
+                    iconName = IngredientsListFragment.VEGETABLES;
+                    break;
+                default:
+                    iconName = USER;
+            }
+            return iconName;
         }
 
     }

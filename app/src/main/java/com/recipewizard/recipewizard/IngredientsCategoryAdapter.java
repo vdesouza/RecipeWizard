@@ -4,18 +4,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.focusable;
+import static android.R.attr.name;
 
 /**
  * Created by vdesouza on 11/16/16.
@@ -46,6 +47,15 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
     public void clear() {
         mItems.clear();
         notifyDataSetChanged();
+    }
+
+    public void remove(String categoryName) {
+        for (int i = 0; i < mItems.size(); i++) {
+            if (mItems.get(i).getCategoryName().equals(categoryName)) {
+                mItems.remove(i);
+                notifyDataSetChanged();
+            }
+        }
     }
 
     public int getCategoryIndex(String categoryName) {
@@ -83,7 +93,6 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         private RelativeLayout ingredientsCategoryRelativeLayout;
         private ImageView ingredientsCategoryIconImageView;
         private TextView ingredientsCategoryNameTextView;
-        private TextView ingredientsCategoryCountTextView;
     }
 
     // Create a View for the IngredientsCategory at specified position
@@ -104,7 +113,6 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
             holder.ingredientsCategoryRelativeLayout = (RelativeLayout) itemLayout.findViewById(R.id.ingredientsCategoryRelativeLayout);
             holder.ingredientsCategoryIconImageView = (ImageView) itemLayout.findViewById(R.id.ingredientsCategoryIcon);
             holder.ingredientsCategoryNameTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryName);
-            holder.ingredientsCategoryCountTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryCount);
             itemLayout.setTag(holder);
             holder.ingredientsCategoryIconImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // Set equal Width and Height for Categories
@@ -127,49 +135,11 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Display Ingredients Category name in TextView
         holder.ingredientsCategoryNameTextView.setText(ingredientsCategory.getCategoryName());
 
-        // Display Ingredients Category checked count in TextView
-        holder.ingredientsCategoryCountTextView.setText(mContext.getString(R.string.checked_count, ingredientsCategory.getCheckedCount()));
-
-        // get category icon
-        switch (ingredientsCategory.getCategoryName()) {
-            case MasterIngredientsList.BAKING:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[0]);
-                break;
-            case MasterIngredientsList.CONDIMENTS:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[1]);
-                break;
-            case MasterIngredientsList.DRY_GOODS:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[2]);
-                break;
-            case MasterIngredientsList.FRUITS:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[3]);
-                break;
-            case MasterIngredientsList.SPICES:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[4]);
-                break;
-            case MasterIngredientsList.MEATS:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[5]);
-                break;
-            case MasterIngredientsList.VEGETABLES:
-                holder.ingredientsCategoryIconImageView.setImageResource(mIconIds[6]);
-                break;
-            default:
-                break;
-        }
+        // Set Category Icon
+        int resID = mContext.getResources().getIdentifier(ingredientsCategory.getIconName(), "drawable", mContext.getPackageName());
+        holder.ingredientsCategoryIconImageView.setImageResource(resID);
 
         return itemLayout;
-    }
-
-    // references to icon images
-    private Integer[] mIconIds = {
-            R.drawable.baking, R.drawable.condiments, R.drawable.drygoods,
-            R.drawable.fruits, R.drawable.herbs, R.drawable.meats, R.drawable.vegetables
-    };
-
-    private Drawable resize(Drawable image) {
-        Bitmap b = ((BitmapDrawable)image).getBitmap();
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
-        return new BitmapDrawable(mContext.getResources(), bitmapResized);
     }
 
 }

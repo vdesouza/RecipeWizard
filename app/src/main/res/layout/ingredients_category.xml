@@ -25,11 +25,4 @@
         android:textAlignment="center"
         android:textStyle="normal|bold"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/ingredientsCategoryCount"
-        android:layout_below="@+id/ingredientsCategoryName"
-        android:textAlignment="center"/>
-
 </RelativeLayout>
