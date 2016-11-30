@@ -1,4 +1,4 @@
-package com.example.hank.test;
+package com.recipewizard.recipewizard;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -114,7 +114,7 @@ public class GetRecipeInfoTask extends AsyncTask<Integer, Void, Recipe> {
                     } catch (IOException e) {
                         Log.i(TAG, "BADIO");
                     }
-                    Ingredient ingredient = new Ingredient(ing, bmp, true);
+                    Ingredient ingredient = new Ingredient(ing, bmp, true, null);
                     ingredients.add(ingredient);
                 }
                 // retrieve ingredients info u need

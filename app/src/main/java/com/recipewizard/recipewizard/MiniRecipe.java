@@ -1,4 +1,4 @@
-package com.example.hank.test;
+package com.recipewizard.recipewizard;
 
 import android.graphics.Bitmap;
 
