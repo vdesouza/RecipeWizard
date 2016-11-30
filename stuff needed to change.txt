@@ -1,0 +1,16 @@
+In this, I have included a demo of how the async tasks should be used and also noted how each async task should be used. The only things I changed to Recipe was I added a constructor to make a Recipe without instructions, since they have separate calls for getting the instructions and other info of a recipe. I also added concerns of some stuff for the recipe and ingredients.
+
+Things to consider including for Recipe: 
+Ingredients used per step
+Servings
+Amount of ingredients
+maybe tags to indicate its vegetarian gluten free etc
+author of recipe
+time needed to cook
+do you want original string, which is more descriptive such as "2 medium shallots" or just amount + "shallots"
+more nutrients?
+more information look at https://market.mashape.com/spoonacular/recipe-food-nutrition#get-analyzed-recipe-instructions and https://market.mashape.com/spoonacular/recipe-food-nutrition#get-recipe-information
+
+where are you going to use the images of ingredients?
+Some of the ingredients, such as preprocessed foods, dont have images necessarily. 
+does ingredient need to be checked?
