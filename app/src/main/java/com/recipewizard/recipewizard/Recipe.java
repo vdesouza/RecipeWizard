@@ -49,6 +49,17 @@ public class Recipe {
 
     }
 
+    public Recipe(String id, String name, Bitmap picture, List<Ingredient> ingredients, int calories, int protein, int carbs, int fat, int likes) {
+        this.id = id;
+        this.name = name;
+        this.picture = picture;
+        this.ingredients = ingredients;
+        this.calories = calories;
+        this.protein = protein;
+        this.carbs = carbs;
+        this.fat = fat;
+        this.likes = likes;
+    }
     // Create a new Badge from data packaged in an Intent
 
     Recipe(Intent intent) {
