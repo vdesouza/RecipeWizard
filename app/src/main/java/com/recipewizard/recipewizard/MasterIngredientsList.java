@@ -81,7 +81,7 @@ public class MasterIngredientsList implements Parcelable {
         masterIngredientsList.add(new Ingredient("Paprika", null, false, SEASONINGS));
         masterIngredientsList.add(new Ingredient("Rosemary", null, false, SEASONINGS));
         masterIngredientsList.add(new Ingredient("Thyme leaves", null, false, SEASONINGS));
-        masterIngredientsList.add(new Ingredient("Turmric", null, false, SEASONINGS));
+        masterIngredientsList.add(new Ingredient("Turmeric", null, false, SEASONINGS));
         masterIngredientsList.add(new Ingredient("Cinnamon", null, false, SEASONINGS));
         masterIngredientsList.add(new Ingredient("Cloves", null, false, SEASONINGS));
         masterIngredientsList.add(new Ingredient("Allspice", null, false, SEASONINGS));
@@ -106,7 +106,7 @@ public class MasterIngredientsList implements Parcelable {
         masterIngredientsList.add(new Ingredient("Stock", null, false, CANNED));
         masterIngredientsList.add(new Ingredient("Broth", null, false, CANNED));
         masterIngredientsList.add(new Ingredient("Canned tomatoes", null, false, CANNED));
-        masterIngredientsList.add(new Ingredient("Tomatoe paste", null, false, CANNED));
+        masterIngredientsList.add(new Ingredient("Tomato paste", null, false, CANNED));
         masterIngredientsList.add(new Ingredient("Pasta Sauce", null, false, CANNED));
         masterIngredientsList.add(new Ingredient("Coconut Milk", null, false, CANNED));
         masterIngredientsList.add(new Ingredient("Salsa", null, false, CANNED));

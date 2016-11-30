@@ -1,6 +1,5 @@
 package com.recipewizard.recipewizard;
 
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,17 +27,11 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static android.R.attr.configChanges;
-import static android.R.attr.focusable;
-import static android.R.attr.icon;
-import static android.R.attr.tag;
 
 
 public class MainActivity extends AppCompatActivity {
