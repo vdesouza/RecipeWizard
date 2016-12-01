@@ -109,4 +109,3 @@ public class GetRecipeIDsTask extends AsyncTask<String[], Void, ArrayList<MiniRe
 }
 
 
-
