@@ -125,9 +125,9 @@ public class FavoritesTabManagerActivity extends ListActivity {
 
         // Load saved ToDoItems, if necessary
 
-		if (mAdapter.getCount() == 0)
+        if (mAdapter.getCount() == 0)
             Log.d(TAG, "Loading items");
-			loadItems();
+        loadItems();
 
     }
 
@@ -168,7 +168,7 @@ public class FavoritesTabManagerActivity extends ListActivity {
         FileOutputStream out = null;
         if(!(new File(filename)).exists()){
             try {
-                 out = new FileOutputStream(filename);
+                out = new FileOutputStream(filename);
                 image.compress(Bitmap.CompressFormat.PNG,100, out);
             } catch(FileNotFoundException e){
                 e.printStackTrace();
@@ -195,106 +195,115 @@ public class FavoritesTabManagerActivity extends ListActivity {
 
     }
 
-    private List<Ingredient> getIngredientsFromLine(String line){
-        String linearray[];
-        List<Ingredient> ingredients = new ArrayList<>();
+    private List<Step> getStepsFromLine(String line){
+        String stepsArray[], singleStepArray[], singleIngredientArray[] ;
+        List<Step> steps = new ArrayList<>();
         Bitmap picture = null;
+        String name;
+        String direction;
+        boolean checked;
+        String category;
+        int amount;
+        String unit;
 
-        line = line.substring(1);
-        line = line.split("]")[0];
-        linearray = line.split(", ");
-        for(String s: linearray){
-             picture = loadImage(s);
-            ingredients.add(new Ingredient(s, picture, false, null));
+        stepsArray = line.split(";");
+        for(String s : stepsArray){
+            singleStepArray = s.split(".");
+            List<Ingredient> ingredients = new ArrayList<>();
+            direction = singleStepArray[0];
+            for(int i = 1; i < singleStepArray.length; i++) {
+                singleIngredientArray = singleStepArray[i].split(",");
+                name = singleIngredientArray[0];
+                picture = loadImage(name);
+                checked = Boolean.parseBoolean(singleIngredientArray[1]);
+                category = singleIngredientArray[2];
+                amount = Integer.parseInt(singleIngredientArray[3]);
+                unit = singleIngredientArray[4];
+                ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+            }
+            steps.add( new Step(direction,ingredients));
         }
-        return ingredients;
+        return steps;
     }
-    private List<String> getDirectionsFromLine(String line){
-        String linearray[];
-        List<String> directions = new ArrayList<>();
 
-        line = line.substring(1);
-        line = line.split("]")[0];
-        linearray = line.split(", ");
-        for(String s: linearray){
-            directions.add(s);
-        }
-        return directions;
-    }
-	// Load stored ToDoItems
-	private void loadItems() {
-		BufferedReader reader = null;
-		try {
-			FileInputStream fis = openFileInput(FILE_NAME);
-			reader = new BufferedReader(new InputStreamReader(fis));
+    // Load stored ToDoItems
+    private void loadItems() {
+        BufferedReader reader = null;
+        try {
+            FileInputStream fis = openFileInput(FILE_NAME);
+            reader = new BufferedReader(new InputStreamReader(fis));
 
             Bitmap picture = null;
-			String id;
+            String id;
             String name;
-            String ingredientsString;
-            String directionsString;
-            List<Ingredient> ingredients = new ArrayList<>();
-            List<String> directions = new ArrayList<>();
+            String stepsString;
+            String author;
+            List<Step> steps = new ArrayList<>();
             String calorieInformationLine [];
             int calories;
             int protein;
             int carbs;
             int fat;
             int likes;
+            int servings;
+            int cook_time_in_minutes;
+            boolean [] allergyInformation = new boolean[Recipe.NUM_ALLERGIES];
 
-			while (null != (id = reader.readLine())) {
-				name = reader.readLine();
+            while (null != (id = reader.readLine())) {
+                name = reader.readLine();
                 picture = loadImage(name);
-				ingredientsString = reader.readLine();
-                ingredients = getIngredientsFromLine(ingredientsString);
-                directionsString = reader.readLine();
-                directions = getDirectionsFromLine(directionsString);
+                author = reader.readLine();
+                stepsString = reader.readLine();
+                steps = getStepsFromLine(stepsString);
                 calorieInformationLine = reader.readLine().split(",");
                 calories = Integer.parseInt(calorieInformationLine[0]);
                 protein = Integer.parseInt(calorieInformationLine[1]);
                 carbs = Integer.parseInt(calorieInformationLine[2]);
                 fat = Integer.parseInt(calorieInformationLine[3]);
                 likes = Integer.parseInt(calorieInformationLine[4]);
-				mAdapter.add(new Recipe(id, name, picture, ingredients, directions, calories,
-                        protein, carbs, fat, likes));
-			}
+                servings = Integer.parseInt(calorieInformationLine[5]);
+                cook_time_in_minutes = Integer.parseInt(calorieInformationLine[6]);
+                mAdapter.add(new Recipe(id, name, author, picture, steps, calories,
+                        protein, carbs, fat, likes, servings, cook_time_in_minutes, allergyInformation));
+            }
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (null != reader) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != reader) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-	// Save ToDoItems to file
-	private void saveItems() {
-		PrintWriter writer = null;
-		try {
-			FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
-			writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-					fos)));
+    // Save ToDoItems to file
+    private void saveItems() {
+        PrintWriter writer = null;
+        try {
+            FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
+            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                    fos)));
 
-			for (int idx = 0; idx < mAdapter.getCount(); idx++) {
+            for (int idx = 0; idx < mAdapter.getCount(); idx++) {
                 Recipe curr = (Recipe) mAdapter.getItem(idx);
                 saveImage(curr.getPicture(), curr.getName());
-                for(Ingredient ingredient : curr.getIngredients())
-                    saveImage(ingredient.getPicture(), ingredient.getName());
-				writer.println(curr);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (null != writer) {
-				writer.close();
-			}
-		}
-	}
+                for(Step step : curr.getSteps())
+                    for(Ingredient ingredient: step.getIngredients())
+                        saveImage(ingredient.getPicture(), ingredient.getName());
+                writer.println(curr);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != writer) {
+                writer.close();
+            }
+        }
+    }
 }
