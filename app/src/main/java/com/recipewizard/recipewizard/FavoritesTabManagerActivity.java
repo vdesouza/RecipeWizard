@@ -205,7 +205,7 @@ public class FavoritesTabManagerActivity extends ListActivity {
         linearray = line.split(", ");
         for(String s: linearray){
              picture = loadImage(s);
-            ingredients.add(new Ingredient(s, picture));
+            ingredients.add(new Ingredient(s, picture, false, null));
         }
         return ingredients;
     }

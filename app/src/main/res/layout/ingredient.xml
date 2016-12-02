@@ -11,14 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:focusable="false"
-        android:focusableInTouchMode="false" />
-
-    <TextView
-        android:id="@+id/ingredientNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/ingredientCheckBox"
-        android:layout_alignBottom="@+id/ingredientCheckBox"
-        android:layout_toRightOf="@+id/ingredientCheckBox" />
+        android:focusableInTouchMode="false"
+        android:textColor="@android:color/darker_gray"
+        android:textStyle="normal|bold"/>
 
 </RelativeLayout>
