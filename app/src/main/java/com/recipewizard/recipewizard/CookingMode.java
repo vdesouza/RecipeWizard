@@ -267,4 +267,3 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
     }
 
 }
-
