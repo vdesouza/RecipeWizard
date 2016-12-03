@@ -15,22 +15,25 @@ import java.util.List;
 public class Step implements Parcelable{
     private String direction;
     private List<Ingredient> ingredients = new ArrayList<>();
+    private List<String> equipment = new ArrayList<>();
 
-    Step(String direction, List<Ingredient> ingredients){
+    Step(String direction, List<Ingredient> ingredients, List<String> equipment){
         this.direction = direction;
         this.ingredients = ingredients;
+        this.equipment = equipment;
     }
     Step(Parcel parcel){
         this.direction = parcel.readString();
         this.ingredients = parcel.createTypedArrayList(Ingredient.CREATOR);
+        this.equipment = parcel.createStringArrayList();
     }
 
     public String getDirection () {return direction;}
     public void setDirection(String direction) {this.direction = direction;}
     public List<Ingredient> getIngredients () {return ingredients;}
     public void setIngredients (ArrayList<Ingredient> ingredients) {this.ingredients = ingredients;}
-
-
+    public List<String> getEquipment() {return equipment;}
+    public void setEquipment (ArrayList<String> equipment) {this.equipment = equipment;}
 
 
     public String toString() {
@@ -46,6 +49,7 @@ public class Step implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(direction);
         dest.writeTypedList(ingredients);
+        dest.writeStringList(equipment);
     }
 
     public static Creator<Step> CREATOR = new Creator<Step>() {
