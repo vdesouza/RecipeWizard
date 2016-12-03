@@ -20,6 +20,8 @@
         <activity
             android:name=".IngredientListActivity"
             android:label="@string/app_name"/>
+        <activity android:name=".RecipeSummaryActivity"/>
+        <activity android:name=".CookingMode" />
     </application>
 
 </manifest>
