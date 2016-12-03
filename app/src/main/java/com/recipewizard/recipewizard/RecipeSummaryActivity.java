@@ -47,7 +47,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         String ings = "";
         String equips = "";
         for (Step step : recipe.getSteps()) {
-            ings += (step.getIngredients() + ",");
+            ings += (step.getIngredients().toString() + ",");
             equips += (step.getEquipment() + ",");
         }
         ings = ings.substring(0, ings.length()-1);
