@@ -3,6 +3,7 @@ package com.recipewizard.recipewizard;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,9 +14,11 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.BufferedReader;
@@ -32,6 +36,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
 
     // Master list of ingredients
-    public static MasterIngredientsList mMasterIngredientsList;
+    private static MasterIngredientsList mMasterIngredientsList;
+    private static List<String> filtersList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // only show options menu on portrait view
         super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
         menu.add(Menu.NONE, MENU_RESET_INGREDIENTS, Menu.NONE, getResources().getString(R.string.reset_ingredient_list));
         return true;
     }
@@ -123,6 +132,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_favorites:
+                Intent favIntent = new Intent(MainActivity.this, FavoritesTabManagerActivity.class);
+                startActivity(favIntent);
+                return true;
+            case R.id.action_filters:
+                showFiltersDialog();
+                return true;
             case MENU_RESET_INGREDIENTS:
                 showIngredientsResetDialog();
                 return true;
@@ -136,6 +152,35 @@ public class MainActivity extends AppCompatActivity {
 
         alert.setTitle("Reset all ingredients back to default?");
         alert.setMessage("This will delete all added ingredients and categories. This will also uncheck all ingredients.");
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                mMasterIngredientsList = new MasterIngredientsList();
+
+                // clear saved ingredients
+                SharedPreferences.Editor editor = getSharedPreferences("pref", Context.MODE_PRIVATE).edit();
+                editor.clear();
+                editor.apply();
+
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+
+    private void showFiltersDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Select filters for recipes");
+        alert.setMessage("Hide ingredients that do not fit these dietary/allergy filters.");
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -340,10 +385,12 @@ public class MainActivity extends AppCompatActivity {
 
             // Set an EditText view to get user input
             final EditText inputIngredient = new EditText(getContext());
+            inputIngredient.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             inputIngredient.setHint("Enter ingredient name");
             layout.addView(inputIngredient);
 
             final AutoCompleteTextView inputCategory = new AutoCompleteTextView(getContext());
+            inputCategory.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
             inputCategory.setHint("Enter category name");
             inputCategory.setThreshold(0);
             // build list of categories for autosuggestion
@@ -391,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
         // Save Ingredients list to shared preferences
         private void save() {
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("MasterIngredientsList", mMasterIngredientsList.toString());
+            editor.putString("MasterIngredientsList", mMasterIngredientsList.toStringForSaving());
             editor.putString("HasSavedList", "True");
             editor.apply();
         }
@@ -408,8 +455,6 @@ public class MainActivity extends AppCompatActivity {
                 String ingredientName;
                 String checked;
 
-                Log.i(TAG, loadedPrefs);
-
                 ArrayList<Ingredient> ingredientsList = new ArrayList<Ingredient>();
                 while (null != (ingredientName = reader.readLine())) {
 
@@ -421,7 +466,6 @@ public class MainActivity extends AppCompatActivity {
                         ingredientsList.add(ingredient);
                     }
                 }
-                Log.i(TAG, ingredientsList.toString());
                 if (mMasterIngredientsList == null) {
                     mMasterIngredientsList = new MasterIngredientsList(ingredientsList);
                 } else {
@@ -481,12 +525,36 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
+        ListView listView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            ArrayList<MiniRecipe> miniRecipes;
+            final ArrayList<Recipe> recipes = new ArrayList<>();
+            String[][] tmp = {{"chicken,pineapple","1"}};
+            try {
+                miniRecipes = new GetRecipeIDsTask().execute(tmp).get();
+                for (MiniRecipe miniRecipe : miniRecipes) {
+                    recipes.add(new GetRecipeInfoTask().execute(miniRecipe.getId()).get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                Log.i(TAG, "exception");
+            }
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText("Recipes Place Holder");
+            listView = (ListView) rootView.findViewById(R.id.recipe_list);
 
+            /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    int index = parent.indexOfChild(v);
+                    Intent intent = new Intent(getActivity(), RecipeSummaryActivity.class);
+                    intent.putExtra("recipeID", recipes.get(index).getId());
+                    startActivity(intent);
+                }
+            });*/
+
+            RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
+            listView.setAdapter(adapter);
             return rootView;
         }
 

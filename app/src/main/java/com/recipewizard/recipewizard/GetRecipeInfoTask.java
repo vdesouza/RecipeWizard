@@ -120,7 +120,7 @@ public class GetRecipeInfoTask extends AsyncTask<Integer, Void, Recipe> {
                 // retrieve ingredients info u need
             }
 
-            recipe = new Recipe(s + "",name,bitmap,ingredients,calories,protein,fat,carbs,likes);
+           // recipe = new Recipe(s + "",name,bitmap,ingredients,calories,protein,fat,carbs,likes);
             reader.close();
             stream.close();
             connection.disconnect();

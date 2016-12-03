@@ -93,13 +93,6 @@ public class IngredientListAdapter extends BaseAdapter implements Filterable {
             holder = new IngredientListAdapter.ViewHolder();
             holder.ingredientCheckBox = (CheckBox) itemLayout.findViewById(R.id.ingredientCheckBox);
             itemLayout.setTag(holder);
-            holder.ingredientCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                    public void onClick(View v) {
-                    ingredient.setCheckedStatus(holder.ingredientCheckBox.isChecked());
-                }
-
-            });
         }
         else {
             itemLayout = (RelativeLayout) convertView;
@@ -109,6 +102,16 @@ public class IngredientListAdapter extends BaseAdapter implements Filterable {
         // Fill in specific Ingredient data
         // Display Ingredient name in TextView
         holder.ingredientCheckBox.setText(ingredient.getName());
+
+        // Display check status of CheckBox
+        holder.ingredientCheckBox.setChecked(ingredient.getCheckedStatus());
+
+        holder.ingredientCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ingredient.setCheckedStatus(holder.ingredientCheckBox.isChecked());
+            }
+        });
 
         // Display check status of CheckBox
         holder.ingredientCheckBox.setChecked(ingredient.getCheckedStatus());
@@ -151,7 +154,7 @@ public class IngredientListAdapter extends BaseAdapter implements Filterable {
                     for (int i = 0; i < mItems.size(); i++) {
                         String data = mItems.get(i).getName();
                         if (data.toLowerCase().startsWith(constraint.toString())) {
-                            FilteredArrList.add(new Ingredient(mItems.get(i).getName(), null, mItems.get(i).getCheckedStatus(), mItems.get(i).getCategory()));
+                            FilteredArrList.add(mItems.get(i));
                         }
                     }
                     // set the Filtered result to return

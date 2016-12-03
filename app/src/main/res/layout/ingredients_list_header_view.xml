@@ -4,4 +4,5 @@
     android:id="@+id/searchEdittext"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:inputType="textCapSentences"
     android:hint="@string/tap_to_search"/>

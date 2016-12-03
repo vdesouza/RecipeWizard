@@ -12,7 +12,11 @@
         android:layout_alignParentLeft="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:textColor="@android:color/darker_gray"
-        android:textStyle="normal|bold"/>
+        android:textColor="#4a4a4a"
+        android:textSize="18sp"
+        android:lineSpacingExtra="8sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
 
 </RelativeLayout>

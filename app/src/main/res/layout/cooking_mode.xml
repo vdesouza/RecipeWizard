@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_weight="0.07"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:text="   PREV STEP"
+            android:textAlignment="viewStart"
+            android:paddingLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/prev_button"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="#ffffff"
+            android:layout_marginRight="0.01dp"
+            android:drawableLeft="@drawable/left"/>
+
+        <Button
+            android:text="NEXT STEP   "
+            android:paddingRight="10dp"
+            android:textAlignment="viewEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/next_button"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="#ffffff"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/right2"/>
+    </LinearLayout>
+
+    <org.opencv.android.JavaCameraView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:id="@+id/camera"
+        android:scaleX="0"
+        android:scaleY="0"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="463dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/recipe"
+                android:scaleType="centerCrop"
+                android:background="#AA646464"/>
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/making"
+                    android:text="Making  |"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:textColor="#ffffff"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:background="#aa7e7e7e"
+                    />
+
+                <TextView
+                    android:text="Quinoa-Crusted Chicken Parmesan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recipe_name"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:textColor="#ffffff"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:background="#aa7e7e7e"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/making"/>
+            </RelativeLayout>
+        </FrameLayout>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar_cooking" />
+
+        <TextView
+            android:text=" Ingredient: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:drawableLeft="@drawable/ingredients_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="2dp"/>
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/step_ingredient"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            android:text=" Equipment: "
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:drawableLeft="@drawable/cooking_tools"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="2dp" />
+
+        <TextView
+            android:text="step_equiments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/step_equiments"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/colorAccent" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.11">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:text="Step 1: "
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="5dp"
+                        android:id="@+id/step_num" />
+
+                    <TextView
+                        android:text="Pour the thawed kernel corn in a slow cooker and add the 1/2 cup of milk. Then sprinkle in the salt, sugar, and dried chives and mix well. Spoon in bite-size pieces of cream cheese on top of the corn, and cut the butter into bite-size pieces and place on top of corn as well. Set the slow cooker on high for 2 hours."
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp"
+                        android:id="@+id/instruction"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
+                </LinearLayout>
+            </ScrollView>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
