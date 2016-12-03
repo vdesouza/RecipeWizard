@@ -1,4 +1,4 @@
-package com.example.yanrufish.tmp;
+package com.recipewizard.recipewizard;
 
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
