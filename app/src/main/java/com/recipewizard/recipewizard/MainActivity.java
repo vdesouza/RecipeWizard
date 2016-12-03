@@ -3,6 +3,7 @@ package com.recipewizard.recipewizard;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,9 +14,11 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // only show options menu on portrait view
         super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
         menu.add(Menu.NONE, MENU_RESET_INGREDIENTS, Menu.NONE, getResources().getString(R.string.reset_ingredient_list));
         return true;
     }
@@ -123,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_favorites:
+                Intent favIntent = new Intent(MainActivity.this, FavoritesTabManagerActivity.class);
+                startActivity(favIntent);
+                return true;
             case MENU_RESET_INGREDIENTS:
                 showIngredientsResetDialog();
                 return true;
@@ -340,10 +349,12 @@ public class MainActivity extends AppCompatActivity {
 
             // Set an EditText view to get user input
             final EditText inputIngredient = new EditText(getContext());
+            inputIngredient.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             inputIngredient.setHint("Enter ingredient name");
             layout.addView(inputIngredient);
 
             final AutoCompleteTextView inputCategory = new AutoCompleteTextView(getContext());
+            inputCategory.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
             inputCategory.setHint("Enter category name");
             inputCategory.setThreshold(0);
             // build list of categories for autosuggestion
@@ -391,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
         // Save Ingredients list to shared preferences
         private void save() {
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("MasterIngredientsList", mMasterIngredientsList.toString());
+            editor.putString("MasterIngredientsList", mMasterIngredientsList.toStringForSaving());
             editor.putString("HasSavedList", "True");
             editor.apply();
         }
@@ -408,8 +419,6 @@ public class MainActivity extends AppCompatActivity {
                 String ingredientName;
                 String checked;
 
-                Log.i(TAG, loadedPrefs);
-
                 ArrayList<Ingredient> ingredientsList = new ArrayList<Ingredient>();
                 while (null != (ingredientName = reader.readLine())) {
 
@@ -421,7 +430,6 @@ public class MainActivity extends AppCompatActivity {
                         ingredientsList.add(ingredient);
                     }
                 }
-                Log.i(TAG, ingredientsList.toString());
                 if (mMasterIngredientsList == null) {
                     mMasterIngredientsList = new MasterIngredientsList(ingredientsList);
                 } else {

@@ -1,25 +1,23 @@
 package com.recipewizard.recipewizard;
 
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by vdesouza on 11/17/16.
@@ -106,6 +104,7 @@ public class IngredientListActivity extends AppCompatActivity {
 
                 // Set an EditText view to get user input
                 final EditText input = new EditText(v.getContext());
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
                 alert.setView(input);
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -124,6 +123,15 @@ public class IngredientListActivity extends AppCompatActivity {
                 });
 
                 alert.show();
+            }
+        });
+
+        mIngredientsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                final Ingredient ingredient = (Ingredient) mAdapter.getItem(position - 1);
+                final CheckBox ingredientCheckBox = (CheckBox) v.findViewById(R.id.ingredientCheckBox);
+                ingredient.setCheckedStatus(!ingredient.getCheckedStatus());
+                ingredientCheckBox.setChecked(ingredient.getCheckedStatus());
             }
         });
 

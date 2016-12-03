@@ -22,6 +22,7 @@ public class Ingredient implements Parcelable{
         this.name = name;
         this.picture = picture;
         this.checked = checked;
+        this.category = category;
     }
     Ingredient(String name, Bitmap picture, boolean checked, String category, int amount,
                String unit){
@@ -60,6 +61,10 @@ public class Ingredient implements Parcelable{
 
     public String toString() {
         return name + "," + checked + "," + category + "," + amount + "," + unit + ",";
+    }
+
+    public String toStringForSaving() {
+        return name + "\n" + checked + "\n" + category + "\n";
     }
 
     @Override

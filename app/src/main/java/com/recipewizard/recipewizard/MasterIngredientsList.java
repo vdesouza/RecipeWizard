@@ -1,21 +1,8 @@
 package com.recipewizard.recipewizard;
 
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.ArraySet;
-import android.util.Log;
-
-import com.google.gson.Gson;
-
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Created by vdesouza on 11/18/16.
@@ -334,6 +321,14 @@ public class MasterIngredientsList implements Parcelable {
         String ingredientsString = "";
         for (Ingredient i : masterIngredientsList) {
             ingredientsString += i.toString();
+        }
+        return ingredientsString;
+    }
+
+    public String toStringForSaving() {
+        String ingredientsString = "";
+        for (Ingredient i : masterIngredientsList) {
+            ingredientsString += i.toStringForSaving();
         }
         return ingredientsString;
     }

@@ -3,26 +3,27 @@ package com.recipewizard.recipewizard;
 import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.os.Parcel;
+import android.widget.CheckBox;
 
 
 /**
  * Created by Brian on 11/17/2016.
  */
 
-class Ingredient implements Parcelable{
+class Ingredient_old implements Parcelable{
 
     private String name = new String ();
     private Bitmap picture;
     private boolean checked;
     private String category = new String();
 
-    Ingredient(String name, Bitmap picture, boolean checked, String category){
+    Ingredient_old(String name, Bitmap picture, boolean checked, String category){
         this.name = name;
         this.picture = picture;
         this.checked = checked;
         this.category = category;
     }
-    Ingredient(Parcel parcel){
+    Ingredient_old(Parcel parcel){
         this.name = parcel.readString();
         this.picture = (Bitmap) parcel.readParcelable(Bitmap.class.getClassLoader());
         this.checked = parcel.readByte() != 0;
