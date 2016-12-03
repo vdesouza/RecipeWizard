@@ -489,12 +489,36 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
+        ListView listView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            ArrayList<MiniRecipe> miniRecipes;
+            final ArrayList<Recipe> recipes = new ArrayList<>();
+            String[][] tmp = {{"chicken,pineapple","1"}};
+            try {
+                miniRecipes = new GetRecipeIDsTask().execute(tmp).get();
+                for (MiniRecipe miniRecipe : miniRecipes) {
+                    recipes.add(new GetRecipeInfoTask().execute(miniRecipe.getId()).get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                Log.i(TAG, "exception");
+            }
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText("Recipes Place Holder");
+            listView = (ListView) rootView.findViewById(R.id.recipe_list);
 
+            /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                    int index = parent.indexOfChild(v);
+                    Intent intent = new Intent(getActivity(), RecipeSummaryActivity.class);
+                    intent.putExtra("recipeID", recipes.get(index).getId());
+                    startActivity(intent);
+                }
+            });*/
+
+            RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
+            listView.setAdapter(adapter);
             return rootView;
         }
 
