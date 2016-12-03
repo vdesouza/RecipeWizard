@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Master list of ingredients
     private static MasterIngredientsList mMasterIngredientsList;
-    private static List<String> filtersList = new ArrayList<String>();
+    // Dietary/Allergy Filters
+    final CharSequence[] filters = {" Easy "," Medium "," Hard "," Very Hard "};
+    final ArrayList seletedFilters=new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +183,9 @@ public class MainActivity extends AppCompatActivity {
 
         alert.setTitle("Select filters for recipes");
         alert.setMessage("Hide ingredients that do not fit these dietary/allergy filters.");
+
+        // build the checklist
+
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
