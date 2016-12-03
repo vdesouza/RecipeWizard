@@ -271,7 +271,12 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
                     ings.add(ingredients.get(jsonIngs.getJSONObject(j).getString("name")));
                     Log.i(TAG, jsonIngs.getJSONObject(j).getString("name"));
                 }
-                Step step = new Step(direction,ings);
+                JSONArray jsonEquip = obj.getJSONArray("equipment");
+                ArrayList<String> equipment = new ArrayList<>();
+                for (int j = 0; j < jsonEquip.length(); j++) {
+                    equipment.add(jsonEquip.getJSONObject(j).getString("name"));
+                }
+                Step step = new Step(direction,ings,equipment);
                 steps.add(step);
                 Log.i(TAG, step.toString());
                 // get ingredients with ingredients JSONArr then each JSONObj has image and name

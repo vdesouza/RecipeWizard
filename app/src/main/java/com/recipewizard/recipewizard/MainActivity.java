@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
     // Master list of ingredients
     private static MasterIngredientsList mMasterIngredientsList;
     // Dietary/Allergy Filters
-    final CharSequence[] filters = {" Easy "," Medium "," Hard "," Very Hard "};
+    final CharSequence[] filters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
+            , " shellfish ", " soy ", " sulfite ", " tree nut ", " wheat "};
+    final CharSequence[] dietFilters = {" pescetarian ", " lacto vegetarian ", " ovo vegetarian ", " vegan ", " vegetarian "};
     final ArrayList seletedFilters = new ArrayList();
 
     @Override
