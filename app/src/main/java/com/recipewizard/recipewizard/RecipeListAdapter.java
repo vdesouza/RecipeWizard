@@ -1,4 +1,4 @@
-package com.example.yanrufish.tmp;
+package com.recipewizard.recipewizard;
 
 import android.app.Activity;
 import android.content.Context;
