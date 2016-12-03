@@ -72,6 +72,15 @@ public class Ingredient implements Parcelable {
         return 0;
     }
 
+    public String toStringDisplay() {
+        if (unit != null) {
+            return amount + " " + unit + " " + name;
+        } else {
+            return amount + " " + name;
+
+        }
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
