@@ -7,4 +7,5 @@
     <string name="add_new_ingredient">Add new ingredients</string>
     <string name="reset_ingredient_list">Reset All Ingredients</string>
     <string name="favorites_icon_name">Saved Recipes</string>
+    <string name="filters_icon_name">Recipe Filters</string>
 </resources>

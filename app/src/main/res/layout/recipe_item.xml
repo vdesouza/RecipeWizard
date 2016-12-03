@@ -7,11 +7,12 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:src="@drawable/recipe"
+
         android:id="@+id/recipe_item_image"
         android:scaleType="centerCrop"
         android:layout_height="140dp"/>
     <!--android:foreground="#99afafaf"-->
+    <!--android:src="@drawable/recipe"-->
 
     <LinearLayout
         android:orientation="vertical"
@@ -27,10 +28,12 @@
         <ImageButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/star_off"
+
             android:id="@+id/recipe_item_star"
             android:layout_margin="-1dp"
             android:background="#00000000" />
+
+        <!--android:src="@drawable/star_off"-->
 
         <TextView
             android:id="@+id/recipe_item_name"
@@ -56,7 +59,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/recipe_item_time"
-                android:drawableLeft="@drawable/timer"
                 android:drawablePadding="6dp"
                 android:textColor="#ffffff"
                 android:paddingLeft="6dp"
@@ -64,13 +66,14 @@
                 android:paddingTop="1dp"
                 android:paddingBottom="1dp"
                 android:background="#aa7e7e7e" />
+            <!--android:drawableLeft="@drawable/timer"-->
 
             <TextView
                 android:text="2 servings"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/recipe_item_servings"
-                android:drawableLeft="@drawable/servings"
+
                 android:drawablePadding="6dp"
                 android:textColor="#ffffff"
                 android:paddingLeft="6dp"
@@ -78,6 +81,8 @@
                 android:paddingTop="1dp"
                 android:paddingBottom="1dp"
                 android:background="#aa7e7e7e" />
+            <!--android:drawableLeft="@drawable/servings"-->
+
         </LinearLayout>
 
     </LinearLayout>

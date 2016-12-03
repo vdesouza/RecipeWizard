@@ -1,10 +1,7 @@
-package com.example.yanrufish.tmp;
+package com.recipewizard.recipewizard;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +27,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
     private static final String TAG = "Recipe Wizard : RecipeListAdapter";
 
-    static ArrayList<Recipe> recipeItems;
+    ArrayList<Recipe> recipeItems;
     Context mContext;
     int resource;
 
@@ -67,12 +64,13 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
     @Override
     public int getCount() {
         return mDisplayedItems.size();
-    }*/
-
-    // Retrieve the Recipe
-    public static Recipe getRecipe(int pos) {
-        return recipeItems.get(pos);
     }
+
+    // Retrieve the number of Recipes
+    @Override
+    public Object getItem(int pos) {
+        return mDisplayedItems.get(pos);
+    }*/
 
     // Get the ID for the Recipes
     // In this case it's just the position
@@ -83,22 +81,28 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
     // Create a View for the RecipesList at specified position
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         // Get the current Recipes
         final Recipe recipe = getItem(position);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.recipe_item, null, true);
+            System.out.println("layout inflated");
         }
         TextView name = (TextView) convertView.findViewById(R.id.recipe_item_name);
         name.setText(recipe.getName());
 
         TextView time = (TextView) convertView.findViewById(R.id.recipe_item_time);
-        time.setText(Integer.toString(recipe.getCookTime())+" min");
+        // TODO: call the correct method
+        // time.setText(recipe.getTime());
 
         TextView servings = (TextView) convertView.findViewById(R.id.recipe_item_servings);
-        servings.setText(Integer.toString(recipe.getServings()) + " servings");
+        // TODO: call the correct method
+        //servings.setText(recipe.getServing());
+
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.recipe_item_image);
+        imageView.setImageBitmap(recipe.getPicture());
 
         final ImageButton star = (ImageButton) convertView.findViewById(R.id.recipe_item_star);
         star.setOnClickListener(new View.OnClickListener() {
@@ -107,54 +111,17 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
             public void onClick(View view) {
                 if (off) {
                     // recipe was not marked as favorite
-                    star.setImageResource(R.drawable.star_on);
+                    //star.setImageResource(R.drawable.star_on);
                     off = false;
                 } else {
                     // recipe was marked as favorite
-                    star.setImageResource(R.drawable.star_off);
+                    //star.setImageResource(R.drawable.star_off);
                     off = true;
                 }
             }
         });
 
-        /*ImageView imageView = (ImageView) convertView.findViewById(R.id.recipe_item_image_button);
-        imageView.setImageBitmap(recipe.getPicture());
-
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
-                Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
-                        recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),
-                        recipe.getProtein(), recipe.getCarbs(), recipe.getFat(),recipe.getLikes(),
-                        recipe.getServings(), recipe.getCookTime(), recipe.getAllergyInformation());
-                getContext().startActivity(intent);
-            }
-        });*/
-        ImageButton button = (ImageButton) convertView.findViewById(R.id.recipe_item_image_button);
-        button.setImageBitmap(recipe.getPicture());
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt("position", position);
-                intent.putExtras(bundle);
-                /*Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
-                        recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),
-                        recipe.getProtein(), recipe.getCarbs(), recipe.getFat(), recipe.getLikes(),
-                        recipe.getServings(), recipe.getCookTime(), recipe.getAllergyInformation());*/
-                mContext.startActivity(intent);
-            }
-        });
-
         return convertView;
-    }
-
-    @Override
-    public boolean isEnabled(int position)
-    {
-        return true;
     }
 
 }

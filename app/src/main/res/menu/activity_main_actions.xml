@@ -9,4 +9,12 @@
           appNs:showAsAction="always|withText"/>
 
 
+    <!-- Favorites action -->
+    <item android:id="@+id/action_filters"
+          android:icon="@drawable/ic_star"
+          android:title="@string/filters_icon_name"
+          appNs:showAsAction="always|withText"/>
+
+
+
 </menu>
