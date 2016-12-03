@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private static MasterIngredientsList mMasterIngredientsList;
     // Dietary/Allergy Filters
     final CharSequence[] filters = {" Easy "," Medium "," Hard "," Very Hard "};
-    final ArrayList seletedFilters=new ArrayList();
+    final ArrayList seletedFilters = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,17 +185,22 @@ public class MainActivity extends AppCompatActivity {
         alert.setMessage("Hide ingredients that do not fit these dietary/allergy filters.");
 
         // build the checklist
+        alert.setMultiChoiceItems(filters, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                if (isChecked) {
+                    // If the user checked the item, add it to the selected items
+                    seletedFilters.add(indexSelected);
+                } else if (seletedFilters.contains(indexSelected)) {
+                    // Else, if the item is already in the array, remove it
+                    seletedFilters.remove(Integer.valueOf(indexSelected));
+                }
+            }
+        });
 
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                mMasterIngredientsList = new MasterIngredientsList();
-
-                // clear saved ingredients
-                SharedPreferences.Editor editor = getSharedPreferences("pref", Context.MODE_PRIVATE).edit();
-                editor.clear();
-                editor.apply();
-
                 // restart the fragment
                 mViewPager.getAdapter().notifyDataSetChanged();
             }
