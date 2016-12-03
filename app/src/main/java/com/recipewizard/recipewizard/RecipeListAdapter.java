@@ -74,13 +74,6 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         return recipeItems.get(pos);
     }
 
-    // Get the ID for the Recipes
-    // In this case it's just the position
-    @Override
-    public long getItemId(int pos) {
-        return pos;
-    }
-
     // Create a View for the RecipesList at specified position
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
