@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Hank on 11/30/2016.
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
 
     final String TAG = "GetRecipesTask";
-
+    public static final int NUM_ALLERGIES = 4;
 
     // intolerances = dairy, egg, gluten, peanut, sesame, seafood, shellfish, soy, sulfite, tree nut, or wheat
     // separate with commas
@@ -61,11 +62,18 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
 
         HttpURLConnection connection = null;
         ArrayList<Recipe> recipes = new ArrayList<>();
+        Log.i(TAG,"SPECIAL INGREDIENTS: " + s);
+        String query = s.split(",")[0];
+        Log.i(TAG,"QUERY: " + query);
         try {
-            URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true" +
-                    "&ingredients=" + s + "&number=5&ranking=" + ranking + "&diet=" + diet +
-                    "&query=&intolerances=" + intolerances);
-            Log.i(TAG, url.toString());
+            StringBuilder urlString = new StringBuilder("https://spoonacular-recipe-food-nutrition-" +
+                    "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&ingredients=");
+            urlString.append(s + "&query=" + s + "&number=5&ranking=");
+            urlString.append(ranking);
+            if (!diet.equals("")) urlString.append("&diet=" + diet);
+            if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);
+            Log.i(TAG, urlString.toString());
+            URL url = new URL(urlString.toString());
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
             connection.setRequestProperty("Accept", "application/json");
@@ -87,7 +95,6 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
                 int id = obj.getInt("id");
                 Recipe recipe = getRecipeInfo(id);
                 if (recipe != null) {
-                    recipe.setDirections(getRecipe(id));
                     recipes.add(recipe);
                 }
             }
@@ -137,26 +144,31 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
 
             JSONObject parent = new JSONObject(json);
             if (parent.getString("instructions") != null && parent.getString("instructions").charAt(0) != '<') {
-                JSONArray ings = parent.getJSONArray("extendedIngredients");
 
                 String name = parent.getString("title");
-                Log.i(TAG, name);
+                //Log.i(TAG, name);
                 int likes = parent.getInt("aggregateLikes");
+                int servings = parent.getInt("servings");
+                String author = "Anonymous";
+                if (parent.has("sourceName")) author = parent.getString("sourceName");
+                int cook_time = parent.getInt("readyInMinutes");
                 // retrieve stuff here for recipe page
-                int calories = -1; // checks in case doesn't have nutrition, maybe separated types of fat?
+                int calories = -1; // checks in case doesn't have nutrition, adding all fat together
                 int fat = -1;
                 int protein = -1;
                 int carbs = -1;
-                JSONArray nutrients = parent.getJSONObject("nutrition").getJSONArray("nutrients");
-                for (int i = 0; i < nutrients.length(); i++) {
-                    JSONObject n = nutrients.getJSONObject(0);
-                    String title = n.getString("title");
+                if (parent.has("nutrition")) {
+                    JSONArray nutrients = parent.getJSONObject("nutrition").getJSONArray("nutrients");
+                    for (int i = 0; i < nutrients.length(); i++) {
+                        JSONObject n = nutrients.getJSONObject(0);
+                        String title = n.getString("title");
 
-                    if (title.equals("Calories")) calories = n.getInt("amount");
-                    if (title.equals("Fat")) fat = n.getInt("amount");
-                    if (title.equals("Protein")) protein = n.getInt("amount");
-                    if (title.equals("Carbohydrates")) carbs = n.getInt("amount");
+                        if (title.equals("Calories")) calories = n.getInt("amount");
+                        if (title.contains("Fat")) fat += n.getInt("amount");
+                        if (title.equals("Protein")) protein = n.getInt("amount");
+                        if (title.equals("Carbohydrates")) carbs = n.getInt("amount");
 
+                    }
                 }
 
                 Bitmap bitmap = null;
@@ -169,12 +181,16 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
                     Log.i(TAG, "BADIO");
                 }
 
-                ArrayList<Ingredient> ingredients = new ArrayList<>();
+                JSONArray ings = parent.getJSONArray("extendedIngredients");
+                HashMap<String, Ingredient> ingredients = new HashMap<>();
                 for (int i = 0; i < ings.length(); i++) {
                     JSONObject temp = ings.getJSONObject(i);
                     String ing = temp.getString("name"); // figure out what to get from ingredient here
-                    Log.i(TAG, ing);
+                    //Log.i(TAG, ing);
+                    String category = temp.getString("aisle");
                     Bitmap bmp = null;
+                    double amount = temp.getDouble("amount");
+                    String unit = temp.getString("unit");
                     if (temp.has("image")) {
                         try {
                             URL url2 = new URL(temp.getString("image"));
@@ -184,14 +200,22 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
                         } catch (IOException e) {
                             Log.i(TAG, "BADIO");
                         }
-                        Ingredient ingredient = new Ingredient(ing, bmp, true, null);
-                        ingredients.add(ingredient);
                     }
+                    Ingredient ingredient = new Ingredient(ing, bmp, true, category,amount,unit);
+                    ingredients.put(ing, ingredient);
                     // retrieve ingredients info u need
                 }
+                boolean[] arr = new boolean[NUM_ALLERGIES];
+                arr[0] = parent.getBoolean("vegetarian");
+                arr[1] = parent.getBoolean("vegan");
+                arr[2] = parent.getBoolean("glutenFree");
+                arr[3] = parent.getBoolean("dairyFree");
 
 
-                recipe = new Recipe(s + "", name, bitmap, ingredients, calories, protein, fat, carbs, likes);
+                // change booleans if needed
+                recipe = new Recipe(s + "", name, author, bitmap, getRecipe(s,ingredients), calories, protein, fat,
+                        carbs, likes, servings, cook_time, arr);
+                //Log.i(TAG,recipe.toString());
             }
             reader.close();
             stream.close();
@@ -212,14 +236,13 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
         }
     }
 
-    private ArrayList<String> getRecipe(int s) throws JSONException {
+    private ArrayList<Step> getRecipe(int s, HashMap<String,Ingredient> ingredients) throws JSONException {
 
         HttpURLConnection connection = null;
-        ArrayList<String> steps = new ArrayList<>();
+        ArrayList<Step> steps = new ArrayList<>();
         try {
             URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
                     + s + "/analyzedInstructions?stepBreakdown=true");
-            Log.i(TAG, url.toString());
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
             connection.setRequestProperty("Accept", "application/json");
@@ -237,11 +260,20 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
 
 
             JSONArray parent = new JSONArray(json).getJSONObject(0).getJSONArray("steps");
+            Log.i(TAG, "Num steps: " + parent.length());
             for (int i = 0; i < parent.length(); i++) {
+                Log.i(TAG, "Step " + i);
                 JSONObject obj = parent.getJSONObject(i);
-                String step = obj.getString("step");
+                String direction = obj.getString("step");
+                ArrayList<Ingredient> ings = new ArrayList<>();
+                JSONArray jsonIngs = obj.getJSONArray("ingredients");
+                for (int j = 0; j < jsonIngs.length(); j++) {
+                    ings.add(ingredients.get(jsonIngs.getJSONObject(j).getString("name")));
+                    Log.i(TAG, jsonIngs.getJSONObject(j).getString("name"));
+                }
+                Step step = new Step(direction,ings);
                 steps.add(step);
-                Log.i(TAG, step);
+                Log.i(TAG, step.toString());
                 // get ingredients with ingredients JSONArr then each JSONObj has image and name
                 // get equipment with equipment JSONArr then each JSONObj has image and name
             }
@@ -264,6 +296,8 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
     }
 
 }
+
+
 
 
 
