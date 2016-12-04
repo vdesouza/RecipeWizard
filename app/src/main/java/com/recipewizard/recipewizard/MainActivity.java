@@ -603,6 +603,7 @@ public class MainActivity extends AppCompatActivity {
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
         ListView listView;
+        ArrayList<Ingredient> checkedIngredients;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -610,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
 
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
-
+            checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
             /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -644,26 +645,35 @@ public class MainActivity extends AppCompatActivity {
             super.setUserVisibleHint(isVisibleToUser);
             if (isVisibleToUser) {
                 // When fragment visible to user, update recipes
-                ArrayList<Recipe> recipes = new ArrayList<>();
-                ArrayList<Ingredient> checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
-                String[] checkedIngredientsName = new String[checkedIngredients.size()];
-                for (int i = 0; i < checkedIngredients.size(); i++) {
-                    checkedIngredientsName[i] = checkedIngredients.get(i).getName();
-                }
-                try {
-                    if (checkedIngredientsName.length > 0) {
-                        Log.i(TAG, "SEARCHING WITH: ");
-                        for (String s: checkedIngredientsName) {
-                            Log.i(TAG, s);
-                        }
-                        recipes = new GetRecipesTask("", "", 1).execute(checkedIngredientsName).get();
+                ArrayList<Ingredient> currCheckedIngredients = mMasterIngredientsList.getCheckedIngredients();
+                // only update recipes if checked ingredients changed.
+                if (!checkedIngredients.equals(currCheckedIngredients)) {
+                    checkedIngredients = currCheckedIngredients;
+                    String[] checkedIngredientsName = new String[checkedIngredients.size()];
+                    for (int i = 0; i < checkedIngredients.size(); i++) {
+                        checkedIngredientsName[i] = checkedIngredients.get(i).getName();
                     }
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.i(TAG, "exception");
+                    ArrayList<Recipe> recipes = new ArrayList<>();
+                    try {
+                        if (checkedIngredientsName.length > 0) {
+
+
+                            String log = "";
+                            for (String i : checkedIngredientsName) {
+                                log = log + i + ", ";
+                            }
+                            Log.i(TAG, "Searching with: " + log);
+
+
+                            recipes = new GetRecipesTask("", "", 1).execute(checkedIngredientsName).get();
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        Log.i(TAG, "exception");
+                    }
+                    RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
+                    listView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
-                RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
-                listView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
             } else {
                 // fragment is hidden
             }

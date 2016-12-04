@@ -122,7 +122,7 @@ public class RecipeToFile {
         }
         return steps;
     }
-    private List<Recipe> getFavoritesListFromFile(){
+    public List<Recipe> getFavoritesListFromFile(){
         BufferedReader reader = null;
         List<Recipe> favorites = new ArrayList<>();
         try {

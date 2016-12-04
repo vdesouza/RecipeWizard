@@ -80,7 +80,7 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
         try {
             StringBuilder urlString = new StringBuilder("https://spoonacular-recipe-food-nutrition-" +
                     "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&ingredients=");
-            urlString.append(s + "&query=" + query + "&number=100&ranking=");
+            urlString.append(s + "&query=" + query + "&number=10&ranking=");
             urlString.append(ranking);
             if (!diet.equals("")) urlString.append("&diet=" + diet);
             if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);

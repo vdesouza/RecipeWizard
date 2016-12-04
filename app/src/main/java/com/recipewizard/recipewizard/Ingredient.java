@@ -38,7 +38,7 @@ public class Ingredient implements Parcelable {
         this.picture = (Bitmap) parcel.readParcelable(Bitmap.class.getClassLoader());
         this.checked = parcel.readByte() != 0;
         this.category = parcel.readString();
-        this.amount = parcel.readInt();
+        this.amount = parcel.readDouble();
         this.unit = parcel.readString();
     }
 
@@ -58,6 +58,11 @@ public class Ingredient implements Parcelable {
     public void setAmount(double amount) {this.amount = amount;}
     public String getUnit () {return unit;}
     public void setUnit (String unit) {this.unit = unit;}
+
+    public boolean equals(Ingredient other) {
+        return (this.name.equals(other.getName()) && this.checked == other.getCheckedStatus());
+
+    }
 
     public String toString() {
         return name + "," + checked + "," + category + "," + amount + "," + unit + ",";
