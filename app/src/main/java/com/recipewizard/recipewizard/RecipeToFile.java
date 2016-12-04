@@ -60,11 +60,15 @@ public class RecipeToFile {
             }
         }
     }
-    private Bitmap loadImage(String itemName){
+    private Bitmap loadImage(String itemName) {
         String filename = itemName + ".png";
-        String fullPath = Environment.getExternalStorageDirectory()+"/" + filename;
-        Log.d(TAG,"Loading: " + fullPath);
-        return BitmapFactory.decodeFile(fullPath);
+        String fullPath = Environment.getExternalStorageDirectory() + "/" + filename;
+        if (!(new File(fullPath).exists())){
+            Log.d(TAG, "Loading: " + fullPath);
+            return BitmapFactory.decodeFile(fullPath);
+        } else {
+            return null;
+        }
     }
 
     private boolean[] getAllergyInformationFromLines (String line){
@@ -103,13 +107,15 @@ public class RecipeToFile {
                 direction = singleStepArray[0];
                 for (int i = 1; i < singleStepArray.length - 1; i++) {
                     singleIngredientArray = singleStepArray[i].split(",");
-                    name = singleIngredientArray[0];
-                    picture = loadImage(name);
-                    checked = Boolean.parseBoolean(singleIngredientArray[1]);
-                    category = singleIngredientArray[2];
-                    amount = Integer.parseInt(singleIngredientArray[3]);
-                    unit = singleIngredientArray[4];
-                    ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+                    if (singleIngredientArray.length > 1){
+                        name = singleIngredientArray[0];
+                        picture = loadImage(name);
+                        checked = Boolean.parseBoolean(singleIngredientArray[1]);
+                        category = singleIngredientArray[2];
+                        amount = Integer.parseInt(singleIngredientArray[3]);
+                        unit = singleIngredientArray[4];
+                        ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+                    }
                 }
                 equipmentString = singleStepArray[singleStepArray.length -1].split(",");
                 if(equipmentString.length > 0);
@@ -189,9 +195,14 @@ public class RecipeToFile {
             for (int idx = 0; idx < favorites.size(); idx++) {
                 Recipe curr = (Recipe) favorites.get(idx);
                 saveImage(curr.getPicture(), curr.getName());
-                for(Step step : curr.getSteps())
-                    for(Ingredient ingredient: step.getIngredients())
-                        saveImage(ingredient.getPicture(), ingredient.getName());
+                if(curr.getSteps() != null) {
+                    for (Step step : curr.getSteps())
+                        if (step.getIngredients() != null) {
+                            for (Ingredient ingredient : step.getIngredients())
+                                if(ingredient != null)
+                                    saveImage(ingredient.getPicture(), ingredient.getName());
+                        }
+                }
                 writer.println(curr);
             }
         } catch (IOException e) {
@@ -229,6 +240,10 @@ public class RecipeToFile {
         removeRecipeWithName(recipe.getName(), favoritesList);
         saveNewFavoritesListToFile(favoritesList);
         Log.d(TAG, "Removed" + recipe.getName() + "recipe from favorites list");
+    }
+    public boolean isRecipeInFavoritesList() {
+        List<Recipe> favoritesList = getFavoritesListFromFile();
+        return favoritesList.contains(recipe);
     }
 
 }
