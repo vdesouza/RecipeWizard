@@ -590,9 +590,9 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             ArrayList<Recipe> recipes = new ArrayList<>();
             //TODO: replace tmp with the ingredient list
-            String[] tmp = {"tomato,pineapple"};
+            String[] tmp = {"fish"};
             try {
-                recipes = new GetRecipesTask("peanut","vegetarian",1).execute(tmp).get();
+                recipes = new GetRecipesTask("","",1).execute(tmp).get();
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
             }
