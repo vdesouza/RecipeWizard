@@ -6,7 +6,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="170dp">
 
         <LinearLayout
             android:orientation="vertical"
@@ -15,12 +15,12 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="130dp"
                 android:layout_marginTop="6dp">
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="178dp"
+                    android:layout_height="130dp"
                     android:src="@drawable/recipe"
                     android:id="@+id/recipe_intro_image"
                     android:scaleType="centerCrop"
@@ -37,33 +37,22 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:textSize="18dp"
+                        android:textSize="24sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/recipe_intro_name"
                         android:layout_centerHorizontal="true"
                         android:textColor="#ffffff"
-                        android:paddingLeft="6dp"
-                        android:paddingRight="5dp"
-                        android:paddingTop="1dp"
-                        android:paddingBottom="1dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:gravity="center_vertical"
                         android:background="#aa7e7e7e"
                         android:text="Quinoa-Crusted Chicken Parmesan" />
                 </RelativeLayout>
 
             </RelativeLayout>
-
-            <TextView
-                android:text=" Ingredients: "
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:drawableLeft="@drawable/ingredients_icon"
-                android:layout_marginTop="6dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="2dp"/>
 
         </LinearLayout>
 
@@ -75,19 +64,10 @@
             android:layout_gravity="bottom|end"
             android:layout_marginRight="16dp"
             android:id="@+id/recipe_intro_fab"
-            app:fabSize="mini"
+            app:fabSize="normal"
             android:baselineAlignBottom="true"/>
 
     </FrameLayout>
-
-    <TextView
-        android:text="TextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/recipe_intro_ingredients"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="5dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -103,7 +83,31 @@
                 android:orientation="vertical" >
 
                 <TextView
+                    android:text=" Ingredients: "
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:drawableLeft="@drawable/ingredients_icon"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recipe_intro_ingredients"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="10dp"/>
+
+                <TextView
                     android:text=" Equipments: "
+                    android:textSize="20sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -119,14 +123,17 @@
                     android:id="@+id/recipe_intro_equiments"
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="15dp"
-                    android:layout_marginBottom="5dp" />
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="10dp"/>
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="4dp">
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp">
 
                     <RelativeLayout
                         android:layout_width="wrap_content"
@@ -338,15 +345,17 @@
                     android:background="@color/colorAccent"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:layout_marginBottom="4dp"/>
+                    android:layout_marginBottom="10dp"/>
 
                 <TextView
                     android:text="If you have approximately 15 minutes to spend in the kitchen, Slow-Cooker Banh Mi Rice Bowls might be a great gluten free and dairy free recipe to try. One serving contains 404 calories, 29g of protein, and 5g of fat. This recipe serves 4. For $1.62 per serving, this recipe covers 32% of your daily requirements of vitamins and minerals. Several people really liked this Vietnamese dish. Head to the store and pick up reduced sodium soy sauce, kosher salt, jalapeno, and a few other things to make it today. To use up the cooked brown rice you could follow this main course with the Blueberry Crisp as a dessert. 6339 people have tried and liked this recipe. It is brought to you by Skinny Taste. It works well as a budget friendly main course. All things considered, we decided this recipe deserves a spoonacular score of 84%. This score is tremendous. If you like this recipe, take a look at these similar recipes: Slow Cooker Banh Mi Rice Bowls, Slow Cooker Salsa Chicken Rice Bowls, and Slow Cooker Hawaiian Chicken Rice Bowls."
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="4dp"
                     android:id="@+id/recipe_summary"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"/>
+                    android:layout_marginLeft="45dp"
+                    android:layout_marginRight="45dp"/>
             </LinearLayout>
         </ScrollView>
 

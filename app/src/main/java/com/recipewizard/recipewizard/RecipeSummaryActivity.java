@@ -70,7 +70,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         ingredients = (TextView) findViewById(R.id.recipe_intro_ingredients);
         if (!ings.isEmpty()) {
             ings = ings.substring(0, ings.length() - 2);
-            ingredients.setText(ings);
+            ingredients.setText(ings.replace(", ", "\n"));
         } else {
             ingredients.setText("NONE");
         }
@@ -78,7 +78,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         equipments = (TextView) findViewById(R.id.recipe_intro_equiments);
         if (!equips.isEmpty()) {
             equips = equips.substring(0, equips.length() - 2);
-            equipments.setText(equips);
+            equipments.setText(equips.replace(", ", "\n"));
         } else {
             equipments.setText("NONE");
         }
