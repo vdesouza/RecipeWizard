@@ -6,7 +6,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="170dp">
 
         <LinearLayout
             android:orientation="vertical"
@@ -15,12 +15,12 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="130dp"
                 android:layout_marginTop="6dp">
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="130dp"
                     android:src="@drawable/recipe"
                     android:id="@+id/recipe_intro_image"
                     android:scaleType="centerCrop"
@@ -37,13 +37,12 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:textSize="26sp"
+                        android:textSize="24sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/recipe_intro_name"
                         android:layout_centerHorizontal="true"
                         android:textColor="#ffffff"
-                        android:textStyle="bold"
                         android:paddingLeft="20dp"
                         android:paddingRight="20dp"
                         android:paddingTop="10dp"
@@ -54,18 +53,6 @@
                 </RelativeLayout>
 
             </RelativeLayout>
-
-            <TextView
-                android:text=" Ingredients: "
-                android:textSize="20sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:drawableLeft="@drawable/ingredients_icon"
-                android:layout_marginTop="6dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="10dp"/>
 
         </LinearLayout>
 
@@ -82,17 +69,6 @@
 
     </FrameLayout>
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/recipe_intro_ingredients"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
-        android:textSize="16sp"
-        android:lineSpacingExtra="10dp"/>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -105,6 +81,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
+
+                <TextView
+                    android:text=" Ingredients: "
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:drawableLeft="@drawable/ingredients_icon"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recipe_intro_ingredients"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="10dp"/>
 
                 <TextView
                     android:text=" Equipments: "
