@@ -1,6 +1,7 @@
 package com.recipewizard.recipewizard;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.media.Image;
 import android.os.Bundle;
@@ -46,7 +47,6 @@ import edu.washington.cs.touchfreelibrary.sensors.CameraGestureSensor;
 public class CookingMode extends AppCompatActivity implements CameraGestureSensor.Listener {
 
     TextView name, stepNum, ingredient, equipment, instruction;
-    ImageView image;
     ProgressBar progressBar;
     Button prev, next;
     ArrayList<Step> stepList = new ArrayList<>();
@@ -60,21 +60,34 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
 
         //final Bundle bundle = getIntent().getExtras();
         //stepList = bundle.getParcelableArrayList("steps");
-        //System.out.println("stepSize "+stepList.size());
         stepList = RecipeSummaryActivity.getSteps();
         totalSteps = stepList.size();
 
         // get the recipe name
         name = (TextView) findViewById(R.id.recipe_name);
-        name.setText(RecipeSummaryActivity.getName());
+        name.setText(getIntent().getStringExtra("name"));
 
         stepNum = (TextView) findViewById(R.id.step_num);
-        image = (ImageView) findViewById(R.id.recipe_item_image_button);
-        image.setImageBitmap(RecipeSummaryActivity.getImage());
+
         ingredient = (TextView) findViewById(R.id.step_ingredient);
+        String t1 = ingredientsToString(stepList.get(0).getIngredients());
+        if (!t1.isEmpty()) {
+            ingredient.setText(t1);
+        } else {
+            ingredient.setText("NONE");
+        }
+
         equipment = (TextView) findViewById(R.id.step_equiments);
+        String t2 = equipmentToString(stepList.get(0).getEquipment());
+        if (!t2.isEmpty()) {
+            equipment.setText(t2);
+        } else {
+            equipment.setText("NONE");
+        }
+
         instruction = (TextView) findViewById(R.id.instruction);
         instruction.setText(stepList.get(0).getDirection());
+
         progressBar = (ProgressBar) findViewById(R.id.progressBar_cooking);
         progressBar.setProgress((int) Math.ceil(100.f/totalSteps));
 
@@ -87,8 +100,21 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
                     progressBar.setProgress((int) Math.ceil(progressBar.getProgress() - 100.0f / totalSteps));
                     stepNum.setText("Step " + (step-1) + ": ");
                     instruction.setText(stepList.get(lastStep-1).getDirection());
-                    ingredient.setText(ingredientsToString(stepList.get(lastStep-1).getIngredients()));
-                    equipment.setText(equipmentToString(stepList.get(lastStep-1).getEquipment()));
+
+                    String t1 = ingredientsToString(stepList.get(lastStep-1).getIngredients());
+                    if (!t1.isEmpty()) {
+                        ingredient.setText(t1);
+                    } else {
+                        ingredient.setText("NONE");
+                    }
+
+                    String t2 = equipmentToString(stepList.get(lastStep-1).getEquipment());
+                    if (!t2.isEmpty()) {
+                        equipment.setText(t2);
+                    } else {
+                        equipment.setText("NONE");
+                    }
+
                     lastStep--;
                     step--;
                 } else {
@@ -106,8 +132,21 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
                     progressBar.setProgress((int) Math.ceil(progressBar.getProgress() + 100.0f / totalSteps));
                     stepNum.setText("Step " + (step+1) + ": ");
                     instruction.setText(stepList.get(lastStep+1).getDirection());
-                    ingredient.setText(ingredientsToString(stepList.get(lastStep+1).getIngredients()));
-                    equipment.setText(equipmentToString(stepList.get(lastStep+1).getEquipment()));
+
+                    String t1 = ingredientsToString(stepList.get(lastStep+1).getIngredients());
+                    if (!t1.isEmpty()) {
+                        ingredient.setText(t1);
+                    } else {
+                        ingredient.setText("NONE");
+                    }
+
+                    String t2 = equipmentToString(stepList.get(lastStep+1).getEquipment());
+                    if (!t2.isEmpty()) {
+                        equipment.setText(t2);
+                    } else {
+                        equipment.setText("NONE");
+                    }
+
                     lastStep++;
                     step++;
                 } else {
@@ -125,18 +164,30 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
 
     private String ingredientsToString(List<Ingredient> ingredients){
         String ret = "";
+        if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
-            ret += (i.toString() + ", ");
+            if (i != null) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
+                    ret += (i.toStringDisplay() + ", ");
+                }
+            }
         }
-        ret = ret.substring(0, ret.length()-2);
+        if (!ret.isEmpty()) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
         return ret;
     }
     private String equipmentToString(List<String> equipments) {
         String ret = "";
+        if (equipments.isEmpty()) return ret;
         for (String s : equipments) {
-            ret += (s.toString() + ", ");
+            if (!s.isEmpty()) {
+                if (s.length() > 0 && !(s.equals("null"))) ret += (s + ", ");
+            }
         }
-        ret = ret.substring(0, ret.length()-2);
+        if (!ret.isEmpty()) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
         return ret;
     }
 

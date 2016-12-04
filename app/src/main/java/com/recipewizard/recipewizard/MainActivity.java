@@ -62,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
 
     // Master list of ingredients
     private static MasterIngredientsList mMasterIngredientsList;
-    private static List<String> filtersList = new ArrayList<String>();
+    // Dietary/Allergy Filters
+    final CharSequence[] allergyFilters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
+            , " shellfish ", " soy ", " sulfite ", " tree nut ", " wheat "};
+    final CharSequence[] dietFilters = {" pescetarian ", " lacto vegetarian ", " ovo vegetarian ", " vegan ", " vegetarian "};
+    final ArrayList selectedAllergyFilters = new ArrayList();
+    final ArrayList selectedDietFilters = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,21 +183,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void showFiltersDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
         alert.setTitle("Select filters for recipes");
         alert.setMessage("Hide ingredients that do not fit these dietary/allergy filters.");
-
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton("Allergy Filters", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                mMasterIngredientsList = new MasterIngredientsList();
+                showAllergyFilterDialog();
+            }
+        });
 
-                // clear saved ingredients
-                SharedPreferences.Editor editor = getSharedPreferences("pref", Context.MODE_PRIVATE).edit();
-                editor.clear();
-                editor.apply();
-
-                // restart the fragment
-                mViewPager.getAdapter().notifyDataSetChanged();
+        alert.setNeutralButton("Diet Filters", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                showDietFilterDialog();
             }
         });
 
@@ -203,6 +204,64 @@ public class MainActivity extends AppCompatActivity {
         });
 
         alert.show();
+    }
+
+    private void showAllergyFilterDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Select Allergy Filters");
+        // build the checklist
+        alert.setMultiChoiceItems(allergyFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                if (isChecked) {
+                    // If the user checked the item, add it to the selected items
+                    selectedAllergyFilters.add(allergyFilters[indexSelected]);
+                } else if (selectedAllergyFilters.contains(allergyFilters[indexSelected])) {
+                    // Else, if the item is already in the array, remove it
+                    selectedAllergyFilters.remove(allergyFilters[indexSelected]);
+                }
+            }
+        });
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+    }
+
+    private void showDietFilterDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Select Diet Filters");
+        // build the checklist
+        alert.setMultiChoiceItems(dietFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                if (isChecked) {
+                    // If the user checked the item, add it to the selected items
+                    selectedDietFilters.add(dietFilters[indexSelected]);
+                } else if (selectedDietFilters.contains(dietFilters[indexSelected])) {
+                    // Else, if the item is already in the array, remove it
+                    selectedDietFilters.remove(dietFilters[indexSelected]);
+                }
+            }
+        });
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
     }
 
 
@@ -529,14 +588,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            ArrayList<MiniRecipe> miniRecipes;
-            final ArrayList<Recipe> recipes = new ArrayList<>();
-            String[][] tmp = {{"chicken,pineapple","1"}};
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            //TODO: replace tmp with the ingredient list
+            String[] tmp = {"fish"};
             try {
-                miniRecipes = new GetRecipeIDsTask().execute(tmp).get();
-                for (MiniRecipe miniRecipe : miniRecipes) {
-                    recipes.add(new GetRecipeInfoTask().execute(miniRecipe.getId()).get());
-                }
+                recipes = new GetRecipesTask("","",1).execute(tmp).get();
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
             }

@@ -2,6 +2,7 @@ package com.recipewizard.recipewizard;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -25,9 +27,9 @@ import java.util.concurrent.ExecutionException;
 public class RecipeSummaryActivity extends AppCompatActivity {
 
     private static final String TAG = "Recipe Wizard: Summary";
-    TextView name, ingredients, equipments, summary, calorie, protein, carbs, fat;
-    ImageView pic;
-    static Recipe recipe;
+    private TextView name, ingredients, equipments, summary, calorie, protein, carbs, fat;
+    private ImageView vege, vegan, gf, df, pic;
+    private static ArrayList<Step> stepsArr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,9 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final Bundle extra = getIntent().getExtras();
-        recipe = RecipeListAdapter.getRecipe(extra.getInt("position"));
+        final Recipe recipe = RecipeListAdapter.getRecipe(extra.getInt("position"));
+
+        stepsArr = (ArrayList<Step>) recipe.getSteps();
 
         name = (TextView) findViewById(R.id.recipe_intro_name);
         name.setText(recipe.getName());
@@ -47,16 +51,30 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         String ings = "";
         String equips = "";
         for (Step step : recipe.getSteps()) {
-            ings += (step.getIngredients() + ",");
-            equips += (step.getEquipment() + ",");
+            if (!step.getIngredients().isEmpty()) {
+                String tmp = ingredientsToString(step.getIngredients());
+                if (!tmp.isEmpty()) ings += (tmp + ", ");
+            }
+            if (!step.getEquipment().isEmpty()) {
+                String tmp = equipmentToString(step.getEquipment());
+                if (!tmp.isEmpty()) equips += (tmp + ", ");
+            }
         }
-        ings = ings.substring(0, ings.length()-1);
         ingredients = (TextView) findViewById(R.id.recipe_intro_ingredients);
-        ingredients.setText(ings);
+        if (!ings.isEmpty()) {
+            ings = ings.substring(0, ings.length() - 2);
+            ingredients.setText(ings);
+        } else {
+            ingredients.setText("NONE");
+        }
 
-        equips = equips.substring(0, equips.length()-1);
         equipments = (TextView) findViewById(R.id.recipe_intro_equiments);
-        equipments.setText(equips);
+        if (!equips.isEmpty()) {
+            equips = equips.substring(0, equips.length() - 2);
+            equipments.setText(equips);
+        } else {
+            equipments.setText("NONE");
+        }
 
         summary = (TextView) findViewById(R.id.recipe_summary);
         try {
@@ -69,26 +87,67 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         pic.setImageBitmap(recipe.getPicture());
 
         calorie = (TextView)findViewById(R.id.calories);
-        calorie.setText(Integer.toString(recipe.getCalories()));
+        if (recipe.getCalories() == -1) {
+            calorie.setText("?");
+            ImageView cal_bg = (ImageView) findViewById(R.id.calorie_bg);
+            cal_bg.setImageResource(R.drawable.info_black);
+        } else {
+            calorie.setText(Integer.toString(recipe.getCalories()));
+        }
 
         protein = (TextView) findViewById(R.id.protein);
-        protein.setText(Integer.toString(recipe.getProtein()));
+        if (recipe.getProtein() == -1) {
+            protein.setText("?");
+            ImageView pro_bg = (ImageView) findViewById(R.id.protein_bg);
+            pro_bg.setImageResource(R.drawable.info_black);
+        } else {
+            protein.setText(Integer.toString(recipe.getProtein()));
+        }
 
         carbs = (TextView) findViewById(R.id.carbs);
-        carbs.setText(Integer.toString(recipe.getCarbs()));
+        if (recipe.getCarbs() == -1) {
+            carbs.setText("?");
+            ImageView car_bg = (ImageView) findViewById(R.id.carbs_bg);
+            car_bg.setImageResource(R.drawable.info_black);
+        } else {
+            carbs.setText(Integer.toString(recipe.getCarbs()));
+        }
 
         fat = (TextView) findViewById(R.id.fat);
-        fat.setText(Integer.toString(recipe.getFat()));
+        if (recipe.getFat() == -1) {
+            fat.setText("?");
+            ImageView fat_bg = (ImageView) findViewById(R.id.fat_bg);
+            fat_bg.setImageResource(R.drawable.info_black);
+        } else {
+            fat.setText(Integer.toString(recipe.getFat()));
+        }
+
+        if (recipe.getAllergyInformation()[0] == false) {
+            vege = (ImageView) findViewById(R.id.vege_bg);
+            vege.setImageResource(R.drawable.nutri_black);
+        }
+        if (recipe.getAllergyInformation()[1] == false) {
+            vegan = (ImageView) findViewById(R.id.vegan_bg);
+            vegan.setImageResource(R.drawable.nutri_black);
+        }
+        if (recipe.getAllergyInformation()[2] == false) {
+            gf = (ImageView) findViewById(R.id.gluten_bg);
+            gf.setImageResource(R.drawable.nutri_black);
+        }
+        if (recipe.getAllergyInformation()[3] == false) {
+            df = (ImageView) findViewById(R.id.dairy_bg);
+            df.setImageResource(R.drawable.nutri_black);
+        }
 
         FloatingActionButton cook = (FloatingActionButton) findViewById(R.id.recipe_intro_fab);
         cook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RecipeSummaryActivity.this, CookingMode.class);
-                //Bundle bundle = new Bundle();
+                Bundle bundle = new Bundle();
                 //bundle.putParcelableArrayList("steps", (ArrayList)recipe.getSteps());
-                //bundle.putParcelable("image", recipe.getPicture());
-                //intent.putExtras(bundle);
+                bundle.putString("name", recipe.getName());
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
@@ -97,31 +156,35 @@ public class RecipeSummaryActivity extends AppCompatActivity {
 
     private String ingredientsToString(List<Ingredient> ingredients){
         String ret = "";
+        if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
-            ret += (i.toString() + ", ");
+            if (i != null) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
+                    ret += (i.toStringDisplay() + ", ");
+                }
+            }
         }
-        ret = ret.substring(0, ret.length()-2);
+        if (!ret.isEmpty()) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
         return ret;
     }
     private String equipmentToString(List<String> equipments) {
         String ret = "";
+        if (equipments.isEmpty()) return ret;
         for (String s : equipments) {
-            ret += (s.toString() + ", ");
+            if (!s.isEmpty()) {
+                if (s.length() > 0 && !(s.equals("null"))) ret += (s + ", ");
+            }
         }
-        ret = ret.substring(0, ret.length()-2);
+        if (!ret.isEmpty()) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
         return ret;
     }
 
     public static ArrayList<Step> getSteps() {
-        return (ArrayList<Step>) recipe.getSteps();
-    }
-
-    public static Bitmap getImage() {
-        return recipe.getPicture();
-    }
-
-    public static String getName(){
-        return recipe.getName();
+        return stepsArr;
     }
 
 }
