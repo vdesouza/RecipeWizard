@@ -602,25 +602,28 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
-            ListView listView;
+        ListView listView;
+        Button loadMore;
         ArrayList<Ingredient> checkedIngredients;
+        int offset = 0;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
+            View footerView = inflater.inflate(R.layout.button_view, null, false);
+            listView.addFooterView(footerView);
+            loadMore = (Button) rootView.findViewById(R.id.load_more);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
-            String[] checkedIngredientsName = new String[checkedIngredients.size()];
+            final String[] checkedIngredientsName = new String[checkedIngredients.size()];
             loadRecipes(checkedIngredientsName);
-            /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                    int index = parent.indexOfChild(v);
-                    Intent intent = new Intent(getActivity(), RecipeSummaryActivity.class);
-                    intent.putExtra("recipeID", recipes.get(index).getId());
-                    startActivity(intent);
+                public void onClick(View view) {
+                    offset += 10;
+                    loadRecipes(checkedIngredientsName);
                 }
-            });*/
+            });
             return rootView;
         }
 
@@ -663,7 +666,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Recipe> recipes = new ArrayList<>();
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask("", "", 1).execute(ingredients).get();
+                    recipes = new GetRecipesTask("", "", 1, offset).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");

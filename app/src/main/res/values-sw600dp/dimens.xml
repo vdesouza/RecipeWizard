@@ -2,5 +2,7 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="image_size">170dp</dimen>
+    <dimen name="image_size">200dp</dimen>
+    <dimen name="star_marginTop">55dp</dimen>
+    <dimen name="recipe_item_layout_top">95dp</dimen>
 </resources>
