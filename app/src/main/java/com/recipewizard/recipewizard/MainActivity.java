@@ -63,10 +63,11 @@ public class MainActivity extends AppCompatActivity {
     // Master list of ingredients
     private static MasterIngredientsList mMasterIngredientsList;
     // Dietary/Allergy Filters
-    final CharSequence[] filters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
+    final CharSequence[] allergyFilters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
             , " shellfish ", " soy ", " sulfite ", " tree nut ", " wheat "};
     final CharSequence[] dietFilters = {" pescetarian ", " lacto vegetarian ", " ovo vegetarian ", " vegan ", " vegetarian "};
-    final ArrayList seletedFilters = new ArrayList();
+    final ArrayList seletedAllergyFilters = new ArrayList();
+    final ArrayList seletedDietFilters = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,29 +183,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void showFiltersDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
         alert.setTitle("Select filters for recipes");
         alert.setMessage("Hide ingredients that do not fit these dietary/allergy filters.");
-
-        // build the checklist
-        alert.setMultiChoiceItems(filters, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
-                if (isChecked) {
-                    // If the user checked the item, add it to the selected items
-                    seletedFilters.add(indexSelected);
-                } else if (seletedFilters.contains(indexSelected)) {
-                    // Else, if the item is already in the array, remove it
-                    seletedFilters.remove(Integer.valueOf(indexSelected));
-                }
+        alert.setPositiveButton("Allergy Filters", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                showAllergyFilterDialog();
             }
         });
 
-
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alert.setNeutralButton("Diet Filters", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // restart the fragment
-                mViewPager.getAdapter().notifyDataSetChanged();
+                showDietFilterDialog();
             }
         });
 
@@ -215,6 +204,64 @@ public class MainActivity extends AppCompatActivity {
         });
 
         alert.show();
+    }
+
+    private void showAllergyFilterDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Select Allergy Filters");
+        // build the checklist
+        alert.setMultiChoiceItems(allergyFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                if (isChecked) {
+                    // If the user checked the item, add it to the selected items
+                    seletedAllergyFilters.add(allergyFilters[indexSelected]);
+                } else if (seletedAllergyFilters.contains(allergyFilters[indexSelected])) {
+                    // Else, if the item is already in the array, remove it
+                    seletedAllergyFilters.remove(allergyFilters[indexSelected]);
+                }
+            }
+        });
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+    }
+
+    private void showDietFilterDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Select Diet Filters");
+        // build the checklist
+        alert.setMultiChoiceItems(dietFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                if (isChecked) {
+                    // If the user checked the item, add it to the selected items
+                    seletedDietFilters.add(dietFilters[indexSelected]);
+                } else if (seletedDietFilters.contains(dietFilters[indexSelected])) {
+                    // Else, if the item is already in the array, remove it
+                    seletedDietFilters.remove(dietFilters[indexSelected]);
+                }
+            }
+        });
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // restart the fragment
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
     }
 
 
