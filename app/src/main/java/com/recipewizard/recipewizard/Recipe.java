@@ -1,8 +1,9 @@
 package com.recipewizard.recipewizard;
 
-import android.graphics.Bitmap;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,8 @@ import java.util.List;
 
 public class Recipe {
 
-    public static final int NUM_ALLERGIES = 10;
+    public static final int NUM_ALLERGIES = 4;
+    // 0 = vegetarian 1 = vegan 2 = glutenfree 3 = dairyfree
     public static final String ITEM_SEP = System.getProperty("line.separator");
     public static final String ID = "id";
     public static final String NAME = "name";
@@ -42,7 +44,7 @@ public class Recipe {
     private int cook_time_minutes;
     private boolean [] allergyInformation = new boolean [NUM_ALLERGIES];
 
-    public Recipe(String id, String name, String author,  Bitmap picture, List<Step> steps, int calories,
+    public Recipe(String id, String name, String author, Bitmap picture, List<Step> steps, int calories,
                   int protein, int carbs, int fat, int likes, int servings, int cook_time_minutes,
                   boolean [] allergyInformation) {
         this.id = id;
@@ -162,7 +164,7 @@ public class Recipe {
     // Take a set of String data values and
     // package them for transport in an Intent
 
-    public static void packageIntent(Intent intent, String id, String author,  String name,
+    public static void packageIntent(Intent intent, String id, String author, String name,
                                      Bitmap picture, ArrayList<Step> steps,
                                      int calories, int protein, int carbs, int fat, int likes,
                                      int servings, int cook_time_minutes,

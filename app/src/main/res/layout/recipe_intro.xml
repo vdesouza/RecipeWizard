@@ -29,20 +29,28 @@
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true" />
 
-                <TextView
-                    android:text="Quinoa-Crusted Chicken Parmesan"
-                    android:textSize="18dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/recipe_intro_name"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="#ffffff"
-                    android:paddingLeft="6dp"
-                    android:paddingRight="5dp"
-                    android:paddingTop="1dp"
-                    android:paddingBottom="1dp"
-                    android:layout_marginTop="30dp"
-                    android:background="#aa7e7e7e" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:textSize="18dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/recipe_intro_name"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#ffffff"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="1dp"
+                        android:paddingBottom="1dp"
+                        android:gravity="center_vertical"
+                        android:background="#aa7e7e7e"
+                        android:text="Quinoa-Crusted Chicken Parmesan" />
+                </RelativeLayout>
 
             </RelativeLayout>
 

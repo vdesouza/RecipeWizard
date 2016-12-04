@@ -3,7 +3,6 @@ package com.recipewizard.recipewizard;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -36,7 +35,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -191,15 +189,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        alert.setNeutralButton("Diet Filters", new DialogInterface.OnClickListener() {
+        alert.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                showDietFilterDialog();
+                dialog.cancel();
             }
         });
 
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton("Diet Filters", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // Canceled.
+                showDietFilterDialog();
             }
         });
 
@@ -207,10 +205,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAllergyFilterDialog() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Select Allergy Filters");
         // build the checklist
-        alert.setMultiChoiceItems(allergyFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+        boolean[] checkedValues = new boolean[allergyFilters.length];
+        for (int i = 0; i < allergyFilters.length; i++) {
+            if (selectedAllergyFilters.contains(allergyFilters[i])) {
+                checkedValues[i] = true;
+            }
+        }
+        alert.setMultiChoiceItems(allergyFilters, checkedValues, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                 if (isChecked) {
@@ -225,7 +229,9 @@ public class MainActivity extends AppCompatActivity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // restart the fragment
-                mViewPager.getAdapter().notifyDataSetChanged();
+                dialog.dismiss();
+//                mViewPager.getAdapter().notifyDataSetChanged();
+                Log.i(TAG, "Selected allergies: " + selectedAllergyFilters.toString());
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -233,13 +239,21 @@ public class MainActivity extends AppCompatActivity {
                 // Canceled.
             }
         });
+
+        alert.show();
     }
 
     private void showDietFilterDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Select Diet Filters");
         // build the checklist
-        alert.setMultiChoiceItems(dietFilters, null, new DialogInterface.OnMultiChoiceClickListener() {
+        boolean[] checkedValues = new boolean[dietFilters.length];
+        for (int i = 0; i < dietFilters.length; i++) {
+            if (selectedDietFilters.contains(dietFilters[i])) {
+                checkedValues[i] = true;
+            }
+        }
+        alert.setMultiChoiceItems(dietFilters, checkedValues, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                 if (isChecked) {
@@ -254,7 +268,9 @@ public class MainActivity extends AppCompatActivity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // restart the fragment
-                mViewPager.getAdapter().notifyDataSetChanged();
+                dialog.dismiss();
+//                mViewPager.getAdapter().notifyDataSetChanged();
+                Log.i(TAG, "Selected diet: " + selectedDietFilters.toString());
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -262,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
                 // Canceled.
             }
         });
+
+        alert.show();
     }
 
 
@@ -588,14 +606,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            ArrayList<Recipe> recipes = new ArrayList<>();
-            //TODO: replace tmp with the ingredient list
-            String[] tmp = {"fish"};
-            try {
-                recipes = new GetRecipesTask("","",1).execute(tmp).get();
-            } catch (InterruptedException | ExecutionException e) {
-                Log.i(TAG, "exception");
-            }
+
+
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
 
@@ -609,8 +621,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });*/
 
-            RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
-            listView.setAdapter(adapter);
+
             return rootView;
         }
 
@@ -625,6 +636,36 @@ public class MainActivity extends AppCompatActivity {
                 for (Ingredient ingredient : mMasterIngredientsList.getCheckedIngredients()) {
                     Log.i(TAG, "Recipe Fragment: " + ingredient.toString());
                 }
+            }
+        }
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (isVisibleToUser) {
+                // When fragment visible to user, update recipes
+                ArrayList<Recipe> recipes = new ArrayList<>();
+                ArrayList<Ingredient> checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
+                String[] checkedIngredientsName = new String[checkedIngredients.size()];
+                for (int i = 0; i < checkedIngredients.size(); i++) {
+                    checkedIngredientsName[i] = checkedIngredients.get(i).getName();
+                }
+                try {
+                    if (checkedIngredientsName.length > 0) {
+                        Log.i(TAG, "SEARCHING WITH: ");
+                        for (String s: checkedIngredientsName) {
+                            Log.i(TAG, s);
+                        }
+                        recipes = new GetRecipesTask("", "", 1).execute(checkedIngredientsName).get();
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    Log.i(TAG, "exception");
+                }
+                RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            } else {
+                // fragment is hidden
             }
         }
     }
