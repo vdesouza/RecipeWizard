@@ -1,4 +1,4 @@
-package com.recipewizard.recipewizard;
+package com.example.yanrufish.tmp;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
