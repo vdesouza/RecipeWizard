@@ -588,14 +588,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            ArrayList<MiniRecipe> miniRecipes;
-            final ArrayList<Recipe> recipes = new ArrayList<>();
-            String[][] tmp = {{"chicken,pineapple","1"}};
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            //TODO: replace tmp with the ingredient list
+            String[] tmp = {"tomato,pineapple"};
             try {
-                miniRecipes = new GetRecipeIDsTask().execute(tmp).get();
-                for (MiniRecipe miniRecipe : miniRecipes) {
-                    recipes.add(new GetRecipeInfoTask().execute(miniRecipe.getId()).get());
-                }
+                recipes = new GetRecipesTask("peanut","vegetarian",1).execute(tmp).get();
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
             }
