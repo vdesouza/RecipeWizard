@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // restart the fragment
                 dialog.dismiss();
-//                mViewPager.getAdapter().notifyDataSetChanged();
+                //mViewPager.getAdapter().notifyDataSetChanged();
                 Log.i(TAG, "Selected diet: " + selectedDietFilters.toString());
             }
         });
