@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -28,9 +29,10 @@ import java.util.List;
 
 public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
-    private static final String TAG = "Recipe Wizard : RecipeListAdapter";
+    private static final String TAG = "RecipeListAdapter";
 
     static ArrayList<Recipe> recipeItems;
+    List<Recipe> favoritesList;
     Context mContext;
     int resource;
 
@@ -39,30 +41,27 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         mContext = context;
         this.recipeItems = recipeItems;
         this.resource = resource;
+        favoritesList = (new RecipeToFile(null, getContext())).getFavoritesListFromFile();
     }
 /*
     // Add an Recipe to the adapter
     // Notify observers that the data set has changed
-
     public void add(Recipe item) {
         mItems.add(item);
         mDisplayedItems.add(item);
         notifyDataSetChanged();
     }
-
     public void remove(Recipe position) {
         mItems.remove(position);
         mDisplayedItems.remove(position);
         notifyDataSetChanged();
     }
-
     // Clears the list adapter of all items.
     public void clear() {
         mItems.clear();
         mDisplayedItems.clear();
         notifyDataSetChanged();
     }
-
     // Returns the number of Recipes
     @Override
     public int getCount() {
@@ -94,8 +93,15 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         servings.setText(Integer.toString(recipe.getServings()) + " servings");
 
         final ImageButton star = (ImageButton) convertView.findViewById(R.id.recipe_item_star);
+        Log.d(TAG, "Making star view for " + recipe.getId() +" ID");
+        if(favoritesList.contains(recipe)) {
+            star.setTag(false);
+            star.setImageResource(R.drawable.star_on);
+        } else{
+            star.setTag(true);
+        }
         star.setOnClickListener(new View.OnClickListener() {
-            boolean off = true;
+            boolean off = (boolean) star.getTag();
             @Override
             public void onClick(View view) {
                 RecipeToFile recipeToFile = new RecipeToFile(recipe, getContext());
@@ -103,11 +109,13 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
                     // recipe was not marked as favorite
                     star.setImageResource(R.drawable.star_on);
                     recipeToFile.addRecipeToFavoritesList();
+                    favoritesList.add(recipe);
                     off = false;
                 } else {
                     // recipe was marked as favorite
                     star.setImageResource(R.drawable.star_off);
                     recipeToFile.removeRecipeFromFavoritesList();
+                    favoritesList.remove(recipe);
                     off = true;
                 }
             }
@@ -115,7 +123,6 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
         /*ImageView imageView = (ImageView) convertView.findViewById(R.id.recipe_item_image_button);
         imageView.setImageBitmap(recipe.getPicture());
-
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

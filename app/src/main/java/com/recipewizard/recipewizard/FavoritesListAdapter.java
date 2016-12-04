@@ -3,11 +3,16 @@ package com.recipewizard.recipewizard;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,16 +20,18 @@ import android.util.Log;
 
 import org.w3c.dom.Text;
 
-public class FavoritesListAdapter extends BaseAdapter {
+public class FavoritesListAdapter extends ArrayAdapter<Recipe> {
 
     private final List<Recipe> mItems = new ArrayList<Recipe>();
+    private final int resource;
     private final Context mContext;
 
     private static final String TAG = "Lab-UserInterface";
 
-    public FavoritesListAdapter(Context context) {
-
+    public FavoritesListAdapter(Context context, int resource) {
+        super(context, resource);
         mContext = context;
+        this.resource = resource;
 
     }
 
@@ -36,6 +43,10 @@ public class FavoritesListAdapter extends BaseAdapter {
         mItems.add(recipe);
         notifyDataSetChanged();
 
+    }
+    public void remove(Recipe recipe){
+        mItems.remove(recipe);
+        notifyDataSetChanged();
     }
 
     // Clears the list adapter of all items.
@@ -59,7 +70,7 @@ public class FavoritesListAdapter extends BaseAdapter {
     // Retrieve the number of ToDoItems
 
     @Override
-    public Object getItem(int pos) {
+    public Recipe getItem(int pos) {
 
         return mItems.get(pos);
 
@@ -92,64 +103,77 @@ public class FavoritesListAdapter extends BaseAdapter {
     // See: http://developer.android.com/training/improving-layouts/smooth-scrolling.html
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        // TODO - Get the current Badge
-        final Recipe recipe = (Recipe) getItem(position);
-
-
-        // TODO - Inflate the View for this Badge
-        // from badge_item.xmll
-        RelativeLayout itemLayout = null;
-        LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if((position %2) == 0) {
-            itemLayout = (RelativeLayout) layoutInflater.inflate(R.layout.favorites_tab_item_right, null);
-        } else{
-            itemLayout = (RelativeLayout) layoutInflater.inflate(R.layout.favorites_tab_item_left, null);
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        // Get the current Recipes
+        final Recipe recipe = getItem(position);
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) getContext()
+                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.recipe_item, null, true);
         }
-        // Fill in specific Badge data
-        // Remember that the data that goes in this View
-        // corresponds to the user interface elements defined
-        // in the layout file
+        TextView name = (TextView) convertView.findViewById(R.id.recipe_item_name);
+        name.setText(recipe.getName());
 
-        final TextView nameView = (TextView) itemLayout.findViewById(R.id.nameView);
-        nameView.setText(recipe.getName());
+        TextView time = (TextView) convertView.findViewById(R.id.recipe_item_time);
+        time.setText(Integer.toString(recipe.getCookTime())+" min");
 
+        TextView servings = (TextView) convertView.findViewById(R.id.recipe_item_servings);
+        servings.setText(Integer.toString(recipe.getServings()) + " servings");
 
+        final ImageButton star = (ImageButton) convertView.findViewById(R.id.recipe_item_star);
+        star.setImageResource(R.drawable.star_on);
+        star.setOnClickListener(new View.OnClickListener() {
+            boolean off = false;
+            @Override
+            public void onClick(View view) {
+                if (off) {
+                    // recipe was not marked as favorite
+                    Log.d(TAG, "This favorites star shouldn't be off");
+                    star.setImageResource(R.drawable.star_on);
+                    off = false;
+                } else {
+                    // recipe was marked as favorite
+                    star.setImageResource(R.drawable.star_off);
+                    RecipeToFile recipeToFile = new RecipeToFile(mItems.get(position), getContext());
+                    recipeToFile.removeRecipeFromFavoritesList();
+                    Log.d(TAG, "Removing " + mItems.get(position).getName() + " from favorites list");
+                    remove(mItems.get(position));
+                    off = true;
+                }
+            }
+        });
 
-        // TODO - Must also set up an OnCheckedChangeListener,
-        // which is called when the user toggles the status checkbox
-
-		/*statusView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-
-				if(statusView.isChecked()){
-					badge.setStatus(Badge.Status.DONE);
-				} else{
-					badge.setStatus(Badge.Status.NOTDONE);
-				}
-
-                        
-                        
-                        
-					}
-				});*/
-
-        // TODO - Display Priority in a TextView
-
-        final ImageView imageView = (ImageView) itemLayout.findViewById(R.id.foodPictureView);
+        /*ImageView imageView = (ImageView) convertView.findViewById(R.id.recipe_item_image_button);
         imageView.setImageBitmap(recipe.getPicture());
 
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
+                Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
+                        recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),
+                        recipe.getProtein(), recipe.getCarbs(), recipe.getFat(),recipe.getLikes(),
+                        recipe.getServings(), recipe.getCookTime(), recipe.getAllergyInformation());
+                getContext().startActivity(intent);
+            }
+        });*/
+        ImageButton button = (ImageButton) convertView.findViewById(R.id.recipe_item_image_button);
+        button.setImageBitmap(recipe.getPicture());
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("position", position);
+                intent.putExtras(bundle);
+                /*Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
+                        recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),
+                        recipe.getProtein(), recipe.getCarbs(), recipe.getFat(), recipe.getLikes(),
+                        recipe.getServings(), recipe.getCookTime(), recipe.getAllergyInformation());*/
+                mContext.startActivity(intent);
+            }
+        });
 
-        // TODO - Display Time and Date.
-        // Hint - use Badge.FORMAT.format(badge.getDate()) to get date and
-        // time String
-
-        // Return the View you just created
-        Log.d(TAG, "returning new badge view");
-        return itemLayout;
-
+        return convertView;
     }
 }
