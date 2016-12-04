@@ -217,6 +217,7 @@ public class GetRecipesTask extends AsyncTask<String, Void, ArrayList<Recipe>> {
                 } catch (IOException e) {
                     Log.i(TAG, "BADIO");
                 }
+                
 
                 JSONArray ings = parent.getJSONArray("extendedIngredients");
                 HashMap<String, Ingredient> ingredients = new HashMap<>();
