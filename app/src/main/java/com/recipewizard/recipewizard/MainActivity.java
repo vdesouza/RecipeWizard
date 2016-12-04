@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
     final CharSequence[] allergyFilters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
             , " shellfish ", " soy ", " sulfite ", " tree nut ", " wheat "};
     final CharSequence[] dietFilters = {" pescetarian ", " lacto vegetarian ", " ovo vegetarian ", " vegan ", " vegetarian "};
-    final ArrayList seletedAllergyFilters = new ArrayList();
-    final ArrayList seletedDietFilters = new ArrayList();
+    final ArrayList selectedAllergyFilters = new ArrayList();
+    final ArrayList selectedDietFilters = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,10 +215,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                 if (isChecked) {
                     // If the user checked the item, add it to the selected items
-                    seletedAllergyFilters.add(allergyFilters[indexSelected]);
-                } else if (seletedAllergyFilters.contains(allergyFilters[indexSelected])) {
+                    selectedAllergyFilters.add(allergyFilters[indexSelected]);
+                } else if (selectedAllergyFilters.contains(allergyFilters[indexSelected])) {
                     // Else, if the item is already in the array, remove it
-                    seletedAllergyFilters.remove(allergyFilters[indexSelected]);
+                    selectedAllergyFilters.remove(allergyFilters[indexSelected]);
                 }
             }
         });
@@ -244,10 +244,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                 if (isChecked) {
                     // If the user checked the item, add it to the selected items
-                    seletedDietFilters.add(dietFilters[indexSelected]);
-                } else if (seletedDietFilters.contains(dietFilters[indexSelected])) {
+                    selectedDietFilters.add(dietFilters[indexSelected]);
+                } else if (selectedDietFilters.contains(dietFilters[indexSelected])) {
                     // Else, if the item is already in the array, remove it
-                    seletedDietFilters.remove(dietFilters[indexSelected]);
+                    selectedDietFilters.remove(dietFilters[indexSelected]);
                 }
             }
         });
