@@ -656,6 +656,15 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<Recipe> recipes = new ArrayList<>();
                     try {
                         if (checkedIngredientsName.length > 0) {
+
+
+                            String log = "";
+                            for (String i : checkedIngredientsName) {
+                                log = log + i + ", ";
+                            }
+                            Log.i(TAG, "Searching with: " + log);
+
+
                             recipes = new GetRecipesTask("", "", 1).execute(checkedIngredientsName).get();
                         }
                     } catch (InterruptedException | ExecutionException e) {
