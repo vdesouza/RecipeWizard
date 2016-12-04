@@ -6,7 +6,7 @@
     <string name="tap_to_search">Tap to search for ingredients</string>
     <string name="add_new_ingredient">Add new ingredients</string>
     <string name="reset_ingredient_list">Reset All Ingredients</string>
-    <string name="favorites_icon_name">Saved Recipes</string>
-    <string name="filters_icon_name">Recipe Filters</string>
+    <string name="favorites_icon_name">Starred</string>
+    <string name="filters_icon_name">Filters</string>
     <string name="home_icon">Home</string>
 </resources>

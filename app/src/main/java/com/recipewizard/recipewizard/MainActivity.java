@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // restart the fragment
                 dialog.dismiss();
-//                mViewPager.getAdapter().notifyDataSetChanged();
+                //mViewPager.getAdapter().notifyDataSetChanged();
                 Log.i(TAG, "Selected diet: " + selectedDietFilters.toString());
             }
         });
@@ -602,16 +602,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
-        ListView listView;
+            ListView listView;
         ArrayList<Ingredient> checkedIngredients;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
+            String[] checkedIngredientsName = new String[checkedIngredients.size()];
+            loadRecipes(checkedIngredientsName);
             /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -621,8 +621,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });*/
-
-
             return rootView;
         }
 
@@ -650,33 +648,30 @@ public class MainActivity extends AppCompatActivity {
                 if (!checkedIngredients.equals(currCheckedIngredients)) {
                     checkedIngredients = currCheckedIngredients;
                     String[] checkedIngredientsName = new String[checkedIngredients.size()];
-                    for (int i = 0; i < checkedIngredients.size(); i++) {
-                        checkedIngredientsName[i] = checkedIngredients.get(i).getName();
-                    }
-                    ArrayList<Recipe> recipes = new ArrayList<>();
-                    try {
-                        if (checkedIngredientsName.length > 0) {
-
-
-                            String log = "";
-                            for (String i : checkedIngredientsName) {
-                                log = log + i + ", ";
-                            }
-                            Log.i(TAG, "Searching with: " + log);
-
-
-                            recipes = new GetRecipesTask("", "", 1).execute(checkedIngredientsName).get();
-                        }
-                    } catch (InterruptedException | ExecutionException e) {
-                        Log.i(TAG, "exception");
-                    }
-                    RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
-                    listView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+                    loadRecipes(checkedIngredientsName);
                 }
             } else {
                 // fragment is hidden
             }
+        }
+
+        public void loadRecipes(String[] ingredients) {
+
+            for (int i = 0; i < checkedIngredients.size(); i++) {
+                ingredients[i] = checkedIngredients.get(i).getName();
+            }
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            try {
+                if (ingredients.length > 0) {
+                    recipes = new GetRecipesTask("", "", 1).execute(ingredients).get();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                Log.i(TAG, "exception");
+            }
+            RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
         }
     }
 

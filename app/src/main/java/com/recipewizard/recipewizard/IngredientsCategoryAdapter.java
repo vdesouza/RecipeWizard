@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -90,7 +92,7 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        private RelativeLayout ingredientsCategoryRelativeLayout;
+        private LinearLayout ingredientsCategoryLinearLayout;
         private ImageView ingredientsCategoryIconImageView;
         private TextView ingredientsCategoryNameTextView;
     }
@@ -102,28 +104,28 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Get the current ingredientsCategory
         final IngredientsCategory ingredientsCategory = mItems.get(position);
 
-        RelativeLayout itemLayout = (RelativeLayout) convertView;
+        LinearLayout itemLayout = (LinearLayout) convertView;
         final ViewHolder holder;
 
         // Inflate the View for this Ingredients Category from ingredients_category.xml
         if (itemLayout == null) {
-            itemLayout = (RelativeLayout) LayoutInflater.from(mContext).inflate(
+            itemLayout = (LinearLayout) LayoutInflater.from(mContext).inflate(
                     R.layout.ingredients_category, parent, false);
             holder = new ViewHolder();
-            holder.ingredientsCategoryRelativeLayout = (RelativeLayout) itemLayout.findViewById(R.id.ingredientsCategoryRelativeLayout);
+            holder.ingredientsCategoryLinearLayout = (LinearLayout) itemLayout.findViewById(R.id.ingredientsCategoryRelativeLayout);
             holder.ingredientsCategoryIconImageView = (ImageView) itemLayout.findViewById(R.id.ingredientsCategoryIcon);
             holder.ingredientsCategoryNameTextView = (TextView) itemLayout.findViewById(R.id.ingredientsCategoryName);
             itemLayout.setTag(holder);
             holder.ingredientsCategoryIconImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // Set equal Width and Height for Categories
-            holder.ingredientsCategoryRelativeLayout.post(new Runnable() {
+            holder.ingredientsCategoryLinearLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     ViewGroup.LayoutParams mParams;
-                    mParams = holder.ingredientsCategoryRelativeLayout.getLayoutParams();
-                    mParams.height = holder.ingredientsCategoryRelativeLayout.getWidth();
-                    holder.ingredientsCategoryRelativeLayout.setLayoutParams(mParams);
-                    holder.ingredientsCategoryRelativeLayout.postInvalidate();
+                    mParams = holder.ingredientsCategoryLinearLayout.getLayoutParams();
+                    mParams.height = holder.ingredientsCategoryLinearLayout.getWidth();
+                    holder.ingredientsCategoryLinearLayout.setLayoutParams(mParams);
+                    holder.ingredientsCategoryLinearLayout.postInvalidate();
                 }
             });
         }
@@ -138,6 +140,8 @@ public class IngredientsCategoryAdapter extends BaseAdapter {
         // Set Category Icon
         int resID = mContext.getResources().getIdentifier(ingredientsCategory.getIconName(), "drawable", mContext.getPackageName());
         holder.ingredientsCategoryIconImageView.setImageResource(resID);
+        int size = (int) mContext.getResources().getDimension(R.dimen.image_size);
+        holder.ingredientsCategoryIconImageView.setLayoutParams(new LinearLayout.LayoutParams(size, size));
 
         return itemLayout;
     }

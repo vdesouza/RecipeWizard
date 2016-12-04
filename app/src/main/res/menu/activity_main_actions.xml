@@ -11,7 +11,7 @@
 
     <!-- Favorites action -->
     <item android:id="@+id/action_filters"
-          android:icon="@drawable/ic_star"
+          android:icon="@drawable/ic_filter"
           android:title="@string/filters_icon_name"
           appNs:showAsAction="always|withText"/>
 
