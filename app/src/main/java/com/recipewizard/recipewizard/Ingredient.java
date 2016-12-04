@@ -12,22 +12,34 @@ import android.os.Parcel;
 public class Ingredient implements Parcelable {
 
     private String name = new String();
-    private Bitmap picture;
     private boolean checked;
+    private Bitmap picture;
     private String category = new String();
     private double amount;
     private String unit;
 
-    Ingredient(String name, Bitmap picture, boolean checked, String category){
+    Ingredient (String name, boolean checked, String category) {
         this.name = name;
-        this.picture = picture;
         this.checked = checked;
         this.category = category;
+    }
+
+    Ingredient(String name, Bitmap picture, boolean checked, String category){
+        this.name = name;
+        this.checked = checked;
+        this.category = category;
+    }
+    Ingredient(String name, boolean checked, String category, double amount,
+               String unit){
+        this.name = name;
+        this.checked = checked;
+        this.category = category;
+        this.amount = amount;
+        this.unit = unit;
     }
     Ingredient(String name, Bitmap picture, boolean checked, String category, double amount,
                String unit){
         this.name = name;
-        this.picture = picture;
         this.checked = checked;
         this.category = category;
         this.amount = amount;
@@ -35,7 +47,6 @@ public class Ingredient implements Parcelable {
     }
     Ingredient(Parcel parcel){
         this.name = parcel.readString();
-        this.picture = (Bitmap) parcel.readParcelable(Bitmap.class.getClassLoader());
         this.checked = parcel.readByte() != 0;
         this.category = parcel.readString();
         this.amount = parcel.readDouble();
@@ -44,8 +55,6 @@ public class Ingredient implements Parcelable {
 
     public String getName () {return name;}
     public void setName (String name) {this.name = name;}
-    public Bitmap getPicture () {return picture;}
-    public void setPicture (Bitmap picture) {this.picture = picture;}
     public boolean getCheckedStatus() {
         return checked;
     }
@@ -89,7 +98,6 @@ public class Ingredient implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-        dest.writeValue(picture);
         dest.writeByte((byte) (checked ? 1 : 0));
         dest.writeString(category);
         dest.writeDouble(amount);

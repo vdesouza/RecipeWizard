@@ -1,5 +1,6 @@
 package com.recipewizard.recipewizard;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.Image;
@@ -8,6 +9,7 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -41,7 +43,12 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final Bundle extra = getIntent().getExtras();
-        final Recipe recipe = RecipeListAdapter.getRecipe(extra.getInt("position"));
+        final Recipe recipe;
+        if(extra.getString("UniqueId").compareTo("Recipes") == 0) {
+            recipe = RecipeListAdapter.getRecipe(extra.getInt("position"));
+        } else{
+            recipe = (new RecipeToFile(null, getApplicationContext())).getFavoritesListFromFile().get(extra.getInt("position"));
+        }
 
         stepsArr = (ArrayList<Step>) recipe.getSteps();
 
@@ -151,7 +158,15 @@ public class RecipeSummaryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
 
+        return super.onOptionsItemSelected(item);
     }
 
     private String ingredientsToString(List<Ingredient> ingredients){

@@ -142,6 +142,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
                 Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
+                bundle.putString("UniqueId", "Recipes");
                 intent.putExtras(bundle);
                 /*Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
                         recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),

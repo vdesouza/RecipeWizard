@@ -56,19 +56,9 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         Log.d(TAG, "Favorites Manager activity onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         listView = (ListView) findViewById(R.id.favorites_list);
-        /*
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                // However Yanru starts the view Recipe
-
-
-            }
-        });
-        */
         // Create a new TodoListAdapter for this ListActivity's ListView
         mAdapter = new FavoritesListAdapter(this, R.layout.recipe_item);
 
@@ -76,12 +66,20 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         listView.setFooterDividersEnabled(true);
         listView.setHeaderDividersEnabled(true);
 
-
-        TextView footerView = null;
-        TextView headerView = null;
         LayoutInflater layoutInflator = LayoutInflater.from(FavoritesTabManagerActivity.this);
         listView.setAdapter(mAdapter);
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // only show options menu on portrait view
@@ -102,6 +100,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    */
 
     @Override
     public void onResume() {
@@ -186,7 +185,6 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         String stepsArray[], singleStepArray[], singleIngredientArray[] ;
         List<Step> steps = new ArrayList<>();
         List<String> equipment = new ArrayList<>();
-        Bitmap picture = null;
         String equipmentString [];
         String name;
         String direction;
@@ -205,12 +203,11 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
                     singleIngredientArray = singleStepArray[i].split(",");
                     if(singleIngredientArray.length > 1) {
                         name = singleIngredientArray[0];
-                        picture = loadImage(name);
                         checked = Boolean.parseBoolean(singleIngredientArray[1]);
                         category = singleIngredientArray[2];
                         amount = Integer.parseInt(singleIngredientArray[3]);
                         unit = singleIngredientArray[4];
-                        ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+                        ingredients.add(new Ingredient(name, checked, category, amount, unit));
                     }
                 }
                 equipmentString = singleStepArray[singleStepArray.length -1].split(",");
@@ -293,13 +290,6 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
             for (int idx = 0; idx < mAdapter.getCount(); idx++) {
                 Recipe curr = (Recipe) mAdapter.getItem(idx);
                 saveImage(curr.getPicture(), curr.getName());
-                if(curr.getSteps() != null) {
-                    for (Step step : curr.getSteps())
-                        if(step.getIngredients() != null) {
-                            for (Ingredient ingredient : step.getIngredients())
-                                saveImage(ingredient.getPicture(), ingredient.getName());
-                        }
-                }
                 writer.println(curr);
             }
         } catch (IOException e) {
