@@ -98,13 +98,16 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
             boolean off = true;
             @Override
             public void onClick(View view) {
+                RecipeToFile recipeToFile = new RecipeToFile(recipe, getContext());
                 if (off) {
                     // recipe was not marked as favorite
                     star.setImageResource(R.drawable.star_on);
+                    recipeToFile.addRecipeToFavoritesList();
                     off = false;
                 } else {
                     // recipe was marked as favorite
                     star.setImageResource(R.drawable.star_off);
+                    recipeToFile.removeRecipeFromFavoritesList();
                     off = true;
                 }
             }
