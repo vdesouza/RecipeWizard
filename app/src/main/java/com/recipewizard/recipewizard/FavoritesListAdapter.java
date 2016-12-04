@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import org.w3c.dom.Text;
 
 public class FavoritesListAdapter extends ArrayAdapter<Recipe> {
 
+    private static ProgressDialog progressDialog = null;
     private final List<Recipe> mItems = new ArrayList<Recipe>();
     private final int resource;
     private final Context mContext;
@@ -165,6 +167,7 @@ public class FavoritesListAdapter extends ArrayAdapter<Recipe> {
                 Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
+                bundle.putString("UniqueId", "Favorites");
                 intent.putExtras(bundle);
                 /*Recipe.packageIntent(intent, recipe.getId(), recipe.getAuthor(), recipe.getName(),
                         recipe.getPicture(), (ArrayList<Step>) recipe.getSteps(), recipe.getCalories(),
