@@ -70,7 +70,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         });
         */
         // Create a new TodoListAdapter for this ListActivity's ListView
-        mAdapter = new FavoritesListAdapter(this);
+        mAdapter = new FavoritesListAdapter(this, R.layout.recipe_item);
 
         // Put divider between ToDoItems and FooterView
         listView.setFooterDividersEnabled(true);
@@ -203,13 +203,15 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
                 direction = singleStepArray[0];
                 for (int i = 1; i < singleStepArray.length - 1; i++) {
                     singleIngredientArray = singleStepArray[i].split(",");
-                    name = singleIngredientArray[0];
-                    picture = loadImage(name);
-                    checked = Boolean.parseBoolean(singleIngredientArray[1]);
-                    category = singleIngredientArray[2];
-                    amount = Integer.parseInt(singleIngredientArray[3]);
-                    unit = singleIngredientArray[4];
-                    ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+                    if(singleIngredientArray.length > 1) {
+                        name = singleIngredientArray[0];
+                        picture = loadImage(name);
+                        checked = Boolean.parseBoolean(singleIngredientArray[1]);
+                        category = singleIngredientArray[2];
+                        amount = Integer.parseInt(singleIngredientArray[3]);
+                        unit = singleIngredientArray[4];
+                        ingredients.add(new Ingredient(name, picture, checked, category, amount, unit));
+                    }
                 }
                 equipmentString = singleStepArray[singleStepArray.length -1].split(",");
                 if(equipmentString.length > 0);
@@ -291,89 +293,13 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
             for (int idx = 0; idx < mAdapter.getCount(); idx++) {
                 Recipe curr = (Recipe) mAdapter.getItem(idx);
                 saveImage(curr.getPicture(), curr.getName());
-                for(Step step : curr.getSteps())
-                    for(Ingredient ingredient: step.getIngredients())
-                        saveImage(ingredient.getPicture(), ingredient.getName());
-                writer.println(curr);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (null != writer) {
-                writer.close();
-            }
-        }
-    }
-    private List<Recipe> getFavoritesListFromFile(){
-        BufferedReader reader = null;
-        List<Recipe> favorites = new ArrayList<>();
-        try {
-            FileInputStream fis = openFileInput(FILE_NAME);
-            reader = new BufferedReader(new InputStreamReader(fis));
-
-            Bitmap picture = null;
-            String id;
-            String name;
-            String stepsString;
-            String author;
-            List<Step> steps = new ArrayList<>();
-            String calorieInformationLine [];
-            int calories;
-            int protein;
-            int carbs;
-            int fat;
-            int likes;
-            int servings;
-            int cook_time_in_minutes;
-            boolean [] allergyInformation;
-
-            while (null != (id = reader.readLine())) {
-                name = reader.readLine();
-                picture = loadImage(name);
-                author = reader.readLine();
-                stepsString = reader.readLine();
-                steps = getStepsFromLine(stepsString);
-                calorieInformationLine = reader.readLine().split(",");
-                calories = Integer.parseInt(calorieInformationLine[0]);
-                protein = Integer.parseInt(calorieInformationLine[1]);
-                carbs = Integer.parseInt(calorieInformationLine[2]);
-                fat = Integer.parseInt(calorieInformationLine[3]);
-                likes = Integer.parseInt(calorieInformationLine[4]);
-                servings = Integer.parseInt(calorieInformationLine[5]);
-                cook_time_in_minutes = Integer.parseInt(calorieInformationLine[6]);
-                allergyInformation = getAllergyInformationFromLines(reader.readLine());
-                favorites.add(new Recipe(id, name, author, picture, steps, calories,
-                        protein, carbs, fat, likes, servings, cook_time_in_minutes, allergyInformation));
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (null != reader) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(curr.getSteps() != null) {
+                    for (Step step : curr.getSteps())
+                        if(step.getIngredients() != null) {
+                            for (Ingredient ingredient : step.getIngredients())
+                                saveImage(ingredient.getPicture(), ingredient.getName());
+                        }
                 }
-            }
-        }
-        return favorites;
-    }
-    private void saveNewFavoritesListToFile(List<Recipe> favorites){
-        PrintWriter writer = null;
-        try {
-            FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
-            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    fos)));
-
-            for (int idx = 0; idx < favorites.size(); idx++) {
-                Recipe curr = (Recipe) favorites.get(idx);
-                saveImage(curr.getPicture(), curr.getName());
-                for(Step step : curr.getSteps())
-                    for(Ingredient ingredient: step.getIngredients())
-                        saveImage(ingredient.getPicture(), ingredient.getName());
                 writer.println(curr);
             }
         } catch (IOException e) {
@@ -383,31 +309,5 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
                 writer.close();
             }
         }
-    }
-    private void removeRecipeWithName (String name, List<Recipe> favorites){
-        int i = 0;
-        boolean found = false;
-
-        for (Recipe r : favorites){
-            if(r.getName().compareTo(name) == 0) {
-                found = true;
-                break;
-            }
-                i++;
-        }
-        if(found) {
-            favorites.remove(i);
-        }
-
-    }
-    public void addRecipeToFavoritesList(Recipe recipe){
-        List<Recipe> favoritesList = getFavoritesListFromFile();
-        favoritesList.add(recipe);
-        saveNewFavoritesListToFile(favoritesList);
-    }
-    public void removeRecipeFromFavoritesList(Recipe recipe){
-        List<Recipe> favoritesList = getFavoritesListFromFile();
-        removeRecipeWithName(recipe.getName(), favoritesList);
-        saveNewFavoritesListToFile(favoritesList);
     }
 }
