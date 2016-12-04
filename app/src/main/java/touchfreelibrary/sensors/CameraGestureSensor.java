@@ -401,7 +401,7 @@ public class CameraGestureSensor extends ClickSensor implements CameraBridgeView
 		Camera mCam = Camera.open(cameraId);
 		Camera.Parameters params = mCam.getParameters();
 
-		params.set("iso", "400"); // values can be "auto", "100", "200", "400", "800", "1600"
+		params.set("iso", "auto"); // values can be "auto", "100", "200", "400", "800", "1600"
 		params.setExposureCompensation(2);
 		params.setWhiteBalance("fluorescent");
 		
