@@ -602,13 +602,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
-        ListView listView;
+            ListView listView;
         ArrayList<Ingredient> checkedIngredients;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
@@ -623,8 +621,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });*/
-
-
             return rootView;
         }
 
@@ -659,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private void loadRecipes(String[] ingredients) {
+        public void loadRecipes(String[] ingredients) {
 
             for (int i = 0; i < checkedIngredients.size(); i++) {
                 ingredients[i] = checkedIngredients.get(i).getName();
