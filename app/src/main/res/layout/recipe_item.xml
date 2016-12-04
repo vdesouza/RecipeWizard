@@ -15,11 +15,12 @@
         android:background="#00000000" />
 
     <ImageButton
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:src="@drawable/star_off"
         android:id="@+id/recipe_item_star"
-        android:paddingTop="25dp"
+        android:layout_marginTop="25dp"
         android:layout_margin="-1dp"
         android:background="#00000000" />
 
