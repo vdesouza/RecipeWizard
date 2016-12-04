@@ -70,7 +70,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         ingredients = (TextView) findViewById(R.id.recipe_intro_ingredients);
         if (!ings.isEmpty()) {
             ings = ings.substring(0, ings.length() - 2);
-            ingredients.setText(ings.replace(", ", "\n"));
+            ingredients.setText(ings);
         } else {
             ingredients.setText("NONE");
         }
@@ -78,7 +78,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         equipments = (TextView) findViewById(R.id.recipe_intro_equiments);
         if (!equips.isEmpty()) {
             equips = equips.substring(0, equips.length() - 2);
-            equipments.setText(equips.replace(", ", "\n"));
+            equipments.setText(equips);
         } else {
             equipments.setText("NONE");
         }
@@ -150,7 +150,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         cook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RecipeSummaryActivity.this, CookingMode.class);
+                Intent intent = new Intent(RecipeSummaryActivity.this, CookingModeLoaderActivity.class);
                 Bundle bundle = new Bundle();
                 //bundle.putParcelableArrayList("steps", (ArrayList)recipe.getSteps());
                 bundle.putString("name", recipe.getName());

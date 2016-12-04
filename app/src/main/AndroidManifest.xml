@@ -21,6 +21,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".RecipeSummaryLoaderActivity"
+            android:theme="@style/LoadingTheme">
+
+        </activity>
+        <activity
+            android:name=".CookingModeLoaderActivity"
+            android:theme="@style/LoadingTheme">
+
+        </activity>
         <activity android:name=".MainActivity"> </activity>
         <activity
             android:name=".IngredientListActivity"
