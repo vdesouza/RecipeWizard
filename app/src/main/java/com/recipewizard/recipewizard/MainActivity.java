@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -666,7 +667,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Recipe> recipes = new ArrayList<>();
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask("", "", 1, offset).execute(ingredients).get();
+                    recipes = new GetRecipesTask("", "", 1).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");

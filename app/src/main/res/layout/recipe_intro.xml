@@ -37,16 +37,16 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/recipe_intro_name"
                         android:layout_centerHorizontal="true"
                         android:textColor="#ffffff"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
                         android:gravity="center_vertical"
                         android:background="#aa7e7e7e"
                         android:text="Quinoa-Crusted Chicken Parmesan" />
@@ -84,7 +84,7 @@
 
                 <TextView
                     android:text=" Ingredients: "
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -102,12 +102,12 @@
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:lineSpacingExtra="10dp"/>
 
                 <TextView
                     android:text=" Equipments: "
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -124,7 +124,7 @@
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="5dp"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:lineSpacingExtra="10dp"/>
 
                 <LinearLayout
@@ -136,14 +136,15 @@
                     android:layout_marginBottom="10dp">
 
                     <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginRight="2dp">
+
                         <ImageView
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:src="@drawable/info_back"
-                            android:id="@+id/calorie_bg" />
+                            android:id="@+id/calorie_bg"/>
                         <TextView
                             android:textSize="8dp"
                             android:text="CALORIE"
