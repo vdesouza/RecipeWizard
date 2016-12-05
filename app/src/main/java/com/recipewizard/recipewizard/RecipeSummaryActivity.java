@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -58,15 +59,16 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         name.setText(recipe.getName());
 
         String ings = "";
-        String equips = "";
+        List<String> equips = new ArrayList<String> ();
         for (Step step : recipe.getSteps()) {
             if (!step.getIngredients().isEmpty()) {
                 String tmp = ingredientsToString(step.getIngredients());
                 if (!tmp.isEmpty()) ings += (tmp + ", ");
             }
             if (!step.getEquipment().isEmpty()) {
-                String tmp = equipmentToString(step.getEquipment());
-                if (!tmp.isEmpty()) equips += (tmp + ", ");
+                for(String e : step.getEquipment())
+                    if(!equips.contains(e))
+                        equips.add(e);
             }
         }
         ingredients = (TextView) findViewById(R.id.recipe_intro_ingredients);
@@ -79,8 +81,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
 
         equipments = (TextView) findViewById(R.id.recipe_intro_equiments);
         if (!equips.isEmpty()) {
-            equips = equips.substring(0, equips.length() - 2);
-            equipments.setText(equips.replace(", ", "\n"));
+            equipments.setText(TextUtils.join("\n", equips));
         } else {
             equipments.setText("NONE");
         }

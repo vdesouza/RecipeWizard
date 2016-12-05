@@ -34,7 +34,7 @@ public class RecipeToFile {
         this.context = context;
     }
     private void saveImage(Bitmap image, String itemName){
-        String filename = itemName + ".png";
+        String filename = itemName.replace(" ", "") + ".png";
         FileOutputStream out = null;
         File root = Environment.getExternalStorageDirectory();
         File file = new File(root, filename);
@@ -61,9 +61,9 @@ public class RecipeToFile {
         }
     }
     private Bitmap loadImage(String itemName) {
-        String filename = itemName + ".png";
+        String filename = itemName.replace(" ", "") + ".png";
         String fullPath = Environment.getExternalStorageDirectory() + "/" + filename;
-        if (!(new File(fullPath).exists())){
+        if ((new File(fullPath).exists())){
             Log.d(TAG, "Loading: " + fullPath);
             return BitmapFactory.decodeFile(fullPath);
         } else {
@@ -87,7 +87,7 @@ public class RecipeToFile {
     }
 
     private List<Step> getStepsFromLine(String line){
-        String stepsArray[], singleStepArray[], singleIngredientArray[] ;
+        String stepsArray[], singleStepArray[], singleIngredientArray[], stepsPlusEquipment[] ;
         List<Step> steps = new ArrayList<>();
         List<String> equipment = new ArrayList<>();
         String equipmentString [];
@@ -95,32 +95,48 @@ public class RecipeToFile {
         String direction;
         boolean checked;
         String category;
-        int amount;
+        double amount;
         String unit;
 
         stepsArray = line.split(";");
         for(String s : stepsArray) {
-            singleStepArray = s.split(".");
+            Log.d(TAG, "Step: " + s);
+            stepsPlusEquipment = s.split("~");
+            singleStepArray = stepsPlusEquipment[0].split("/");
             List<Ingredient> ingredients = new ArrayList<>();
+            for(int i = 0; i < singleStepArray.length ; i++){
+                Log.d(TAG, "Step Split part " +i + " : " + singleStepArray[i]);
+            }
             if (singleStepArray.length > 0) {
                 direction = singleStepArray[0];
-                for (int i = 1; i < singleStepArray.length - 1; i++) {
+                for (int i = 1; i < singleStepArray.length ; i++) {
+                    Log.d(TAG, "Ingredient: " + singleStepArray[i]);
                     singleIngredientArray = singleStepArray[i].split(",");
-                    if (singleIngredientArray.length > 1){
+                    if (singleIngredientArray.length > 3) {
                         name = singleIngredientArray[0];
                         checked = Boolean.parseBoolean(singleIngredientArray[1]);
                         category = singleIngredientArray[2];
-                        amount = Integer.parseInt(singleIngredientArray[3]);
-                        unit = singleIngredientArray[4];
+                        amount = Double.parseDouble(singleIngredientArray[3]);
+                        if (singleIngredientArray.length == 5) {
+                            unit = singleIngredientArray[4];
+                        } else {
+                            unit = "";
+                        }
                         ingredients.add(new Ingredient(name, checked, category, amount, unit));
                     }
                 }
-                equipmentString = singleStepArray[singleStepArray.length -1].split(",");
-                if(equipmentString.length > 0);
-                for(String e : equipmentString) {
-                    equipment.add(e);
-                }
+                if(stepsPlusEquipment.length > 1) {
+                    Log.d(TAG, "Equipment: " + stepsPlusEquipment[1]);
+                    equipmentString = stepsPlusEquipment[1].split(",");
 
+                    if (equipmentString.length > 0) ;
+                    for (String e : equipmentString) {
+                        if(!equipment.contains(e))
+                            equipment.add(e);
+                    }
+                } else{
+                    Log.d(TAG, "No Equipment");
+                }
                 steps.add(new Step(direction, ingredients, equipment));
             }
         }
@@ -129,6 +145,7 @@ public class RecipeToFile {
     public List<Recipe> getFavoritesListFromFile(){
         BufferedReader reader = null;
         List<Recipe> favorites = new ArrayList<>();
+
         try {
             FileInputStream fis = context.openFileInput(FILE_NAME);
             reader = new BufferedReader(new InputStreamReader(fis));
@@ -154,6 +171,7 @@ public class RecipeToFile {
                 picture = loadImage(name);
                 author = reader.readLine();
                 stepsString = reader.readLine();
+                Log.d(TAG, "stepsString: " + stepsString);
                 steps = getStepsFromLine(stepsString);
                 calorieInformationLine = reader.readLine().split(",");
                 calories = Integer.parseInt(calorieInformationLine[0]);

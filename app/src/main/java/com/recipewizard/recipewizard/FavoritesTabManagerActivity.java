@@ -1,5 +1,6 @@
 package com.recipewizard.recipewizard;
 
+import android.content.Context;
 import android.os.Environment;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -125,7 +126,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
 
     }
     private void saveImage(Bitmap image, String itemName){
-        String filename = itemName + ".png";
+        String filename = itemName.replace(" ", "") + ".png";
         FileOutputStream out = null;
         File root = Environment.getExternalStorageDirectory();
         File file = new File(root, filename);
@@ -152,7 +153,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         }
     }
     private Bitmap loadImage(String itemName){
-        String filename = itemName + ".png";
+        String filename = itemName.replace(" ", "") + ".png";
         String fullPath = Environment.getExternalStorageDirectory()+"/" + filename;
         Log.d(TAG,"Loading: " + fullPath);
         return BitmapFactory.decodeFile(fullPath);
@@ -181,8 +182,9 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         return allergyInformation;
     }
 
+    // Load stored ToDoItems
     private List<Step> getStepsFromLine(String line){
-        String stepsArray[], singleStepArray[], singleIngredientArray[] ;
+        String stepsArray[], singleStepArray[], singleIngredientArray[], stepsPlusEquipment[] ;
         List<Step> steps = new ArrayList<>();
         List<String> equipment = new ArrayList<>();
         String equipmentString [];
@@ -190,40 +192,55 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         String direction;
         boolean checked;
         String category;
-        int amount;
+        double amount;
         String unit;
 
         stepsArray = line.split(";");
         for(String s : stepsArray) {
-            singleStepArray = s.split(".");
+            Log.d(TAG, "Step: " + s);
+            stepsPlusEquipment = s.split("~");
+            singleStepArray = stepsPlusEquipment[0].split("/");
             List<Ingredient> ingredients = new ArrayList<>();
+            for(int i = 0; i < singleStepArray.length ; i++){
+                Log.d(TAG, "Step Split part " +i + " : " + singleStepArray[i]);
+            }
             if (singleStepArray.length > 0) {
                 direction = singleStepArray[0];
-                for (int i = 1; i < singleStepArray.length - 1; i++) {
+
+                for (int i = 1; i < singleStepArray.length; i++) {
+                    Log.d(TAG, "Ingredient: " + singleStepArray[i]);
                     singleIngredientArray = singleStepArray[i].split(",");
-                    if(singleIngredientArray.length > 1) {
+                    if (singleIngredientArray.length > 1){
                         name = singleIngredientArray[0];
                         checked = Boolean.parseBoolean(singleIngredientArray[1]);
                         category = singleIngredientArray[2];
-                        amount = Integer.parseInt(singleIngredientArray[3]);
-                        unit = singleIngredientArray[4];
+                        amount = Double.parseDouble(singleIngredientArray[3]);
+                        if(singleIngredientArray.length == 5) {
+                            unit = singleIngredientArray[4];
+                        } else{
+                            unit = "";
+                        }
                         ingredients.add(new Ingredient(name, checked, category, amount, unit));
                     }
                 }
-                equipmentString = singleStepArray[singleStepArray.length -1].split(",");
-                if(equipmentString.length > 0);
-                for(String e : equipmentString) {
-                    equipment.add(e);
-                }
+                if(stepsPlusEquipment.length > 1) {
+                    Log.d(TAG, "Equipment: " + stepsPlusEquipment[1]);
+                    equipmentString = stepsPlusEquipment[1].split(",");
+                    if (equipmentString.length > 0) ;
+                    for (String e : equipmentString) {
+                        if(!equipment.contains(e))
+                            equipment.add(e);
+                    }
 
+                } else{
+                    Log.d(TAG, "No Equipment");
+                }
                 steps.add(new Step(direction, ingredients, equipment));
             }
         }
         return steps;
     }
-
-    // Load stored ToDoItems
-    private void loadItems() {
+    public void loadItems(){
         BufferedReader reader = null;
         try {
             FileInputStream fis = openFileInput(FILE_NAME);
@@ -250,6 +267,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
                 picture = loadImage(name);
                 author = reader.readLine();
                 stepsString = reader.readLine();
+                Log.d(TAG, "stepsString: " + stepsString);
                 steps = getStepsFromLine(stepsString);
                 calorieInformationLine = reader.readLine().split(",");
                 calories = Integer.parseInt(calorieInformationLine[0]);
@@ -278,12 +296,10 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
             }
         }
     }
-
-    // Save ToDoItems to file
-    private void saveItems() {
+    private void saveItems(){
         PrintWriter writer = null;
         try {
-            FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
             writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                     fos)));
 
