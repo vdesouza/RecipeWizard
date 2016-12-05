@@ -675,7 +675,6 @@ public class MainActivity extends AppCompatActivity {
 
         // reset ingredients/put in new one = fail
         public int updateData(String[] ingredients) {
-            
             for (int i = 0; i < checkedIngredients.size(); i++) {
                 ingredients[i] =
                         checkedIngredients.get(i).getName().replace(" ", "+");
