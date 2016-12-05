@@ -5,4 +5,5 @@
     <dimen name="image_size">200dp</dimen>
     <dimen name="star_marginTop">55dp</dimen>
     <dimen name="recipe_item_layout_top">95dp</dimen>
+    <dimen name="recipe_nutrition">64dp</dimen>
 </resources>

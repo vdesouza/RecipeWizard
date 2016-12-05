@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -70,7 +72,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         ingredients = (TextView) findViewById(R.id.recipe_intro_ingredients);
         if (!ings.isEmpty()) {
             ings = ings.substring(0, ings.length() - 2);
-            ingredients.setText(ings);
+            ingredients.setText(ings.replace(", ", "\n"));
         } else {
             ingredients.setText("NONE");
         }
@@ -78,7 +80,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         equipments = (TextView) findViewById(R.id.recipe_intro_equiments);
         if (!equips.isEmpty()) {
             equips = equips.substring(0, equips.length() - 2);
-            equipments.setText(equips);
+            equipments.setText(equips.replace(", ", "\n"));
         } else {
             equipments.setText("NONE");
         }
@@ -107,6 +109,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
             protein.setText("?");
             ImageView pro_bg = (ImageView) findViewById(R.id.protein_bg);
             pro_bg.setImageResource(R.drawable.info_black);
+
         } else {
             protein.setText(Integer.toString(recipe.getProtein()));
         }
