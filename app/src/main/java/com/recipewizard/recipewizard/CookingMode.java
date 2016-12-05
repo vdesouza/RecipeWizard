@@ -58,6 +58,10 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cooking_mode);
 
+        // adds back button to action bar
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        
         //final Bundle bundle = getIntent().getExtras();
         //stepList = bundle.getParcelableArrayList("steps");
         stepList = RecipeSummaryActivity.getSteps();
@@ -160,6 +164,16 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
         retrieveControls();
         loadOpenCV();
 
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private String ingredientsToString(List<Ingredient> ingredients){
