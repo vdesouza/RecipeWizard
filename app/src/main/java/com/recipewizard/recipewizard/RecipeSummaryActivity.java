@@ -178,7 +178,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
             if (i != null) {
-                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null")) && !ings.contains(i.getName())) {
                     ret += (i.toStringDisplay() + ", ");
                 }
             }
@@ -192,7 +192,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         String ret = "";
         if (equipments.isEmpty()) return ret;
         for (String s : equipments) {
-            if (!s.isEmpty()) {
+            if (!s.isEmpty() && !equips.contains(s)) {
                 if (s.length() > 0 && !(s.equals("null"))) ret += (s + ", ");
             }
         }
