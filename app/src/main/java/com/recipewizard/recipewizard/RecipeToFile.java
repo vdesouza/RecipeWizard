@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 public class RecipeToFile {
-    private static final String FILE_NAME = "FavoritesListManagerActivityData.txt";
+    private static final String FILE_NAME = "FavoritesListManagerActivityDataList.txt";
     private static final String TAG ="RecipeToFile";
 
     private Recipe recipe;
@@ -73,16 +73,19 @@ public class RecipeToFile {
 
     private boolean[] getAllergyInformationFromLines (String line){
         String allergiesArray[];
+        Log.d(TAG, "Allergies line :" + line);
         boolean allergyInformation [] = new boolean [Recipe.NUM_ALLERGIES];
         int i = 0;
-        line = line.split("\\[")[1];
-        line = line.split("]")[0];
         allergiesArray = line.split(",");
 
         for(String s : allergiesArray){
-            allergyInformation[i] = Boolean.parseBoolean(s);
+            if(s.compareTo("1") == 0)
+                allergyInformation[i] = true;
+            else
+                allergyInformation[i] = false;
             i++;
         }
+        Log.d(TAG, "Allergies array: " + allergyInformation.toString());
         return allergyInformation;
     }
 
@@ -101,8 +104,8 @@ public class RecipeToFile {
         stepsArray = line.split(";");
         for(String s : stepsArray) {
             Log.d(TAG, "Step: " + s);
-            stepsPlusEquipment = s.split("~");
-            singleStepArray = stepsPlusEquipment[0].split("/");
+            stepsPlusEquipment = s.split("~/");
+            singleStepArray = stepsPlusEquipment[0].split("/~");
             List<Ingredient> ingredients = new ArrayList<>();
             for(int i = 0; i < singleStepArray.length ; i++){
                 Log.d(TAG, "Step Split part " +i + " : " + singleStepArray[i]);
@@ -111,19 +114,19 @@ public class RecipeToFile {
                 direction = singleStepArray[0];
                 for (int i = 1; i < singleStepArray.length ; i++) {
                     Log.d(TAG, "Ingredient: " + singleStepArray[i]);
-                    singleIngredientArray = singleStepArray[i].split(",");
-                    if (singleIngredientArray.length > 3) {
-                        name = singleIngredientArray[0];
-                        checked = Boolean.parseBoolean(singleIngredientArray[1]);
-                        category = singleIngredientArray[2];
-                        amount = Double.parseDouble(singleIngredientArray[3]);
-                        if (singleIngredientArray.length == 5) {
-                            unit = singleIngredientArray[4];
-                        } else {
-                            unit = "";
+                        singleIngredientArray = singleStepArray[i].split(",");
+                        if (singleIngredientArray.length > 3) {
+                            name = singleIngredientArray[0];
+                            checked = Boolean.parseBoolean(singleIngredientArray[1]);
+                            category = singleIngredientArray[2];
+                            amount = Double.parseDouble(singleIngredientArray[3]);
+                            if (singleIngredientArray.length == 5) {
+                                unit = singleIngredientArray[4];
+                            } else {
+                                unit = "";
+                            }
+                            ingredients.add(new Ingredient(name, checked, category, amount, unit));
                         }
-                        ingredients.add(new Ingredient(name, checked, category, amount, unit));
-                    }
                 }
                 if(stepsPlusEquipment.length > 1) {
                     Log.d(TAG, "Equipment: " + stepsPlusEquipment[1]);

@@ -659,16 +659,18 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
-            final View footerView = inflater.inflate(R.layout.button_view, null, false);
+            View footerView = inflater.inflate(R.layout.button_view, null, false);
             loadMore = (Button) footerView.findViewById(R.id.load_more);
+            listView.addFooterView(footerView);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
             final String[] checkedIngredientsName = new String[checkedIngredients.size()];
             loadRecipes(checkedIngredientsName);
             loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    loadMore.setText("Load 10 more recipes");
-                    offset = updateData(checkedIngredientsName);
+                    checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
+                    final String[] checked = new String[checkedIngredients.size()];
+                    offset = updateData(checked);
                 }
             });
             return rootView;
@@ -677,8 +679,7 @@ public class MainActivity extends AppCompatActivity {
         // reset ingredients/put in new one = fail
         public int updateData(String[] ingredients) {
             for (int i = 0; i < checkedIngredients.size(); i++) {
-                ingredients[i] =
-                        checkedIngredients.get(i).getName().replace(" ", "+");
+                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
             }
             try {
                 offset = GetRecipesTask.getCounter();
@@ -716,7 +717,6 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Ingredient> currCheckedIngredients = mMasterIngredientsList.getCheckedIngredients();
                 // only update recipes if checked ingredients changed.
                 if (!checkedIngredients.equals(currCheckedIngredients)) {
-                    listView.setAdapter(null);
                     checkedIngredients = currCheckedIngredients;
                     String[] checkedIngredientsName = new String[checkedIngredients.size()];
                     loadRecipes(checkedIngredientsName);

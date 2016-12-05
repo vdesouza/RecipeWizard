@@ -41,7 +41,7 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
 
     public static final int ADD_FAVORITE_RECIPE_REQUEST = 0;
     public static final int REMOVE_FAVORITE_RECIPE_REQUEST = 1;
-    private static final String FILE_NAME = "FavoritesListManagerActivityData.txt";
+    private static final String FILE_NAME = "FavoritesListManagerActivityDataList.txt";
     private static final String TAG = "FavoritesList";
     private static final String NAME = "name";
 
@@ -171,12 +171,13 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         String allergiesArray[];
         boolean allergyInformation [] = new boolean [Recipe.NUM_ALLERGIES];
         int i = 0;
-        line = line.split("\\[")[1];
-        line = line.split("]")[0];
         allergiesArray = line.split(",");
 
         for(String s : allergiesArray){
-            allergyInformation[i] = Boolean.parseBoolean(s);
+            if(s.compareTo("1") == 0)
+                allergyInformation[i] = true;
+            else
+                allergyInformation[i] = false;
             i++;
         }
         return allergyInformation;
@@ -198,8 +199,8 @@ public class FavoritesTabManagerActivity extends AppCompatActivity {
         stepsArray = line.split(";");
         for(String s : stepsArray) {
             Log.d(TAG, "Step: " + s);
-            stepsPlusEquipment = s.split("~");
-            singleStepArray = stepsPlusEquipment[0].split("/");
+            stepsPlusEquipment = s.split("~/");
+            singleStepArray = stepsPlusEquipment[0].split("/~");
             List<Ingredient> ingredients = new ArrayList<>();
             for(int i = 0; i < singleStepArray.length ; i++){
                 Log.d(TAG, "Step Split part " +i + " : " + singleStepArray[i]);

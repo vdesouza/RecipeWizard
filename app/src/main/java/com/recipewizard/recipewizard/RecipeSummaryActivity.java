@@ -35,6 +35,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
     private TextView name, ingredients, equipments, summary, calorie, protein, carbs, fat;
     private ImageView vege, vegan, gf, df, pic;
     private static ArrayList<Step> stepsArr;
+    String ings = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,6 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         name = (TextView) findViewById(R.id.recipe_intro_name);
         name.setText(recipe.getName());
 
-        String ings = "";
         List<String> equips = new ArrayList<String> ();
         for (Step step : recipe.getSteps()) {
             if (!step.getIngredients().isEmpty()) {
@@ -178,7 +178,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
             if (i != null) {
-                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null")) && !ings.contains(i.getName())) {
                     ret += (i.toStringDisplay() + ", ");
                 }
             }
