@@ -35,6 +35,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.HeaderViewListAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     public static class FixedTabsPagerAdapter extends FragmentPagerAdapter {
 
         public FixedTabsPagerAdapter(FragmentManager fm) {
-           super(fm);
+            super(fm);
         }
 
         @Override
@@ -667,11 +668,26 @@ public class MainActivity extends AppCompatActivity {
             loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    offset += 10;
-                    loadRecipes(checkedIngredientsName);
+                    //TODO: change to offset = GetRecipesTask.getCount();
+                    offset = updateData(checkedIngredientsName);
                 }
             });
             return rootView;
+        }
+
+
+        public int updateData(String[] ingredients) {
+            try {
+                ArrayList<Recipe> add = new GetRecipesTask("", "", 1, offset, getContext()).execute(ingredients).get();
+                for (Recipe recipe : add) {
+                    ((RecipeListAdapter) ((HeaderViewListAdapter) listView.getAdapter()).getWrappedAdapter())
+                            .insert(recipe, ((RecipeListAdapter) ((HeaderViewListAdapter)
+                                    listView.getAdapter()).getWrappedAdapter()).getCount());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                Log.i(TAG, "exception");
+            }
+            return GetRecipesTask.getCounter();
         }
 
         // Test to check that checked ingredients are getting seeing correctly
@@ -706,15 +722,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void loadRecipes(String[] ingredients) {
-
-            for (int i = 0; i < checkedIngredients.size(); i++) {
-                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
-            }
             ArrayList<Recipe> recipes = new ArrayList<>();
+            for (int i = 0; i < checkedIngredients.size(); i++) {
+                ingredients[i] = checkedIngredients.get(i).getName();
+            }
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, offset, getContext()).execute(ingredients).get();
-
+                    recipes = new GetRecipesTask("", "", 1, 0, getContext()).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
@@ -722,37 +736,38 @@ public class MainActivity extends AppCompatActivity {
             RecipeListAdapter adapter = new RecipeListAdapter(getActivity(), R.layout.fragment_holder, recipes);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-
         }
     }
+
+
     // Takes in the ingredients as a string separated by commas (ex. "apples,cinammon")
 // return a minirecipe, which only contains a picture name, ingredient count, and likes.
 // use the minirecipe for the listadapter for when recipes are returned.
 
-        private static class GetRecipesTask extends AsyncTask<String, ArrayList<Recipe>, ArrayList<Recipe>> {
+    private static class GetRecipesTask extends AsyncTask<String, ArrayList<Recipe>, ArrayList<Recipe>> {
 
-            final String TAG = "GetRecipesTask";
-            public static final int NUM_ALLERGIES = 4;
-            Context context;
-            ProgressDialog progressDialog;
+        final String TAG = "GetRecipesTask";
+        public static final int NUM_ALLERGIES = 4;
+        Context context;
+        ProgressDialog progressDialog;
 
-            HashSet<String> blacklist = new HashSet<>();
-            HashSet<String> goodlist = new HashSet<>();
-            String[] blist = {"Steamy Kitchen", "Crumb", "HowStuffWorks", "Chubby Hubby", "Food.com",
-                    "Dorie Greenspan", "Deep South Dish", "SF Gate", "Bijouxs",
-                    "Martha Stewart", "Foodnetwork"};
+        HashSet<String> blacklist = new HashSet<>();
+        HashSet<String> goodlist = new HashSet<>();
+        String[] blist = {"Steamy Kitchen", "Crumb", "HowStuffWorks", "Chubby Hubby", "Food.com",
+                "Dorie Greenspan", "Deep South Dish", "SF Gate", "Bijouxs",
+                "Martha Stewart", "Foodnetwork"};
 
-            int counter = 0;
+        static int counter = 0;
 
-            // Maybes: Epicurious, Foodista, Anonymous
+        // Maybes: Epicurious, Foodista, Anonymous
 
-            // intolerances = dairy, egg, gluten, peanut, sesame, seafood, shellfish, soy, sulfite, tree nut, or wheat
-            // separate with commas
-            String intolerances;
-            // diet = pescetarian, lacto vegetarian, ovo vegetarian, vegan, paleo, primal, and vegetarian.
-            String diet;
-            // ranking = 1 or 2, maximize used ingredients or minimize missing ingredients
-            int ranking;
+        // intolerances = dairy, egg, gluten, peanut, sesame, seafood, shellfish, soy, sulfite, tree nut, or wheat
+        // separate with commas
+        String intolerances;
+        // diet = pescetarian, lacto vegetarian, ovo vegetarian, vegan, paleo, primal, and vegetarian.
+        String diet;
+        // ranking = 1 or 2, maximize used ingredients or minimize missing ingredients
+        int ranking;
         @Override
         protected void onPreExecute() {
             this.progressDialog = new ProgressDialog(context, R.style.SpinnerTheme);
@@ -767,100 +782,100 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-            public GetRecipesTask(String intolerances, String diet, int ranking, int offset, Context context) {
-                this.intolerances = intolerances;
-                this.diet = diet;
-                this.ranking = ranking;
-                this.counter = offset;
-                this.context = context;
-                Log.i(TAG, "counter: " + this.counter);
+        public GetRecipesTask(String intolerances, String diet, int ranking, int offset, Context context) {
+            this.intolerances = intolerances;
+            this.diet = diet;
+            this.ranking = ranking;
+            this.counter = offset;
+            this.context = context;
+            Log.i(TAG, "counter: " + this.counter);
 //        for (int i = 0; i < blist.length; i++) {
 //            blacklist.add(blist[i]);
 //        }
+        }
+
+        @Override
+        protected ArrayList<Recipe> doInBackground(String... args) {
+
+            try {
+
+                return getRecipeIDs(args[0]);
+
+            } catch (JSONException e) {
+                Log.i(TAG,"FUCK");
+                return new ArrayList<>();
             }
 
-            @Override
-            protected ArrayList<Recipe> doInBackground(String... args) {
+        }
 
-                try {
+        private ArrayList<Recipe> getRecipeIDs(String s) throws JSONException {
 
-                    return getRecipeIDs(args[0]);
-
-                } catch (JSONException e) {
-                    Log.i(TAG,"FUCK");
-                    return new ArrayList<>();
+            HttpURLConnection connection = null;
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            //Log.i(TAG,"SPECIAL INGREDIENTS: " + s);
+            String query = s.split(",")[0];
+            //Log.i(TAG,"QUERY: " + query);
+            try {
+                StringBuilder urlString = new StringBuilder("https://spoonacular-recipe-food-nutrition-" +
+                        "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&ingredients=");
+                urlString.append(s + "&query=" + s + "&number=100&query=&ranking=");
+                urlString.append(ranking + "&offset=");
+                urlString.append(counter);
+                if (!diet.equals("")) urlString.append("&diet=" + diet);
+                if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);
+                //Log.i(TAG, urlString.toString());
+                URL url = new URL(urlString.toString());
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                BufferedReader reader = null;
+                StringBuffer jsonBuffer = new StringBuffer("");
+                reader = new BufferedReader(new InputStreamReader(stream));
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    jsonBuffer.append(line);
                 }
+                String json = jsonBuffer.toString();
+                //Log.i(TAG, json + "\n");
 
-            }
-
-            private ArrayList<Recipe> getRecipeIDs(String s) throws JSONException {
-
-                HttpURLConnection connection = null;
-                ArrayList<Recipe> recipes = new ArrayList<>();
-                //Log.i(TAG,"SPECIAL INGREDIENTS: " + s);
-                String query = s.split(",")[0];
-                //Log.i(TAG,"QUERY: " + query);
-                try {
-                    StringBuilder urlString = new StringBuilder("https://spoonacular-recipe-food-nutrition-" +
-                            "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&ingredients=");
-                    urlString.append(s + "&query=" + s + "&number=100&query=&ranking=");
-                    urlString.append(ranking + "&offset=");
-                    urlString.append(counter);
-                    if (!diet.equals("")) urlString.append("&diet=" + diet);
-                    if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);
-                    //Log.i(TAG, urlString.toString());
-                    URL url = new URL(urlString.toString());
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
-                    connection.setRequestProperty("Accept", "application/json");
-                    connection.connect();
-                    InputStream stream = connection.getInputStream();
-                    BufferedReader reader = null;
-                    StringBuffer jsonBuffer = new StringBuffer("");
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    String line = "";
-                    while ((line = reader.readLine()) != null) {
-                        jsonBuffer.append(line);
-                    }
-                    String json = jsonBuffer.toString();
-                    //Log.i(TAG, json + "\n");
-
-                    JSONArray parent = new JSONObject(json).getJSONArray("results");
-                    Log.i(TAG, parent.length() + "");
-                    for (int i = 0; i < parent.length(); i++) {
-                        JSONObject obj = parent.getJSONObject(i);
-                        int id = obj.getInt("id");
-                        Recipe recipe = getRecipeInfo(id);
-                        if (recipe != null) {
-                            recipes.add(recipe);
-                        } if (recipes.size() == 10) {
+                JSONArray parent = new JSONObject(json).getJSONArray("results");
+                Log.i(TAG, parent.length() + "");
+                for (int i = 0; i < parent.length(); i++) {
+                    JSONObject obj = parent.getJSONObject(i);
+                    int id = obj.getInt("id");
+                    Recipe recipe = getRecipeInfo(id);
+                    if (recipe != null) {
+                        recipes.add(recipe);
+                    } if (recipes.size() == 10) {
 
 //                    Recipe r = getRecipeInfo(5014);
 //                    if (r != null) {
 //                        Log.i(TAG, "OOPS");
 //                        recipes.add(recipe);
 //                    }
-                            counter += i + 1;
-                            return recipes;
-                        }
+                        counter += i + 1;
+                        return recipes;
                     }
-
-
-                    reader.close();
-                    stream.close();
-                    connection.disconnect();
-
-                } catch (MalformedURLException e) {
-                    Log.i(TAG, "Invalid URL.");
-                } catch (IOException e) {
-                    Log.i(TAG, "Failed");
-                } catch (Exception e){
-                    Log.i(TAG,e.getMessage());
                 }
-                finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
+
+
+                reader.close();
+                stream.close();
+                connection.disconnect();
+
+            } catch (MalformedURLException e) {
+                Log.i(TAG, "Invalid URL.");
+            } catch (IOException e) {
+                Log.i(TAG, "Failed");
+            } catch (Exception e){
+                Log.i(TAG,e.getMessage());
+            }
+            finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
 //            Log.i(TAG, "BLACKLIST: ");
 //            StringBuilder stringBuilder = new StringBuilder();
 //            for (String string : blacklist) {
@@ -877,215 +892,215 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //            Log.i(TAG, stringBuilder.toString());
 
-                    return recipes;
-                }
+                return recipes;
             }
+        }
 
-            private Recipe getRecipeInfo(int s) throws JSONException {
+        private Recipe getRecipeInfo(int s) throws JSONException {
 
-                Recipe recipe = null;
+            Recipe recipe = null;
 
-                HttpURLConnection connection = null;
+            HttpURLConnection connection = null;
 
-                Log.i(TAG, "ID: " + s);
-                try {
-                    URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/" + s +
-                            "/information?includeNutrition=true");
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
-                    connection.setRequestProperty("Accept", "application/json");
-                    connection.connect();
-                    InputStream stream = connection.getInputStream();
-                    BufferedReader reader = null;
-                    StringBuffer jsonBuffer = new StringBuffer("");
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    String line = "";
-                    while ((line = reader.readLine()) != null) {
-                        jsonBuffer.append(line);
-                    }
-                    String json = jsonBuffer.toString();
-                    //Log.i(TAG, json + "\n");
+            Log.i(TAG, "ID: " + s);
+            try {
+                URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/" + s +
+                        "/information?includeNutrition=true");
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                BufferedReader reader = null;
+                StringBuffer jsonBuffer = new StringBuffer("");
+                reader = new BufferedReader(new InputStreamReader(stream));
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    jsonBuffer.append(line);
+                }
+                String json = jsonBuffer.toString();
+                //Log.i(TAG, json + "\n");
 
-                    JSONObject parent = new JSONObject(json);
-                    String auth = "Anonymous";
-                    if (parent.has("sourceName")) auth = parent.getString("sourceName");
-                    Log.i(TAG, parent.getString("sourceUrl"));
-                    Log.i(TAG, auth);
-                    if (!auth.equals("Foodnetwork") && !parent.getString("instructions").equals("null")) { //&& parent.getString("instructions").charAt(0) != '<') {
+                JSONObject parent = new JSONObject(json);
+                String auth = "Anonymous";
+                if (parent.has("sourceName")) auth = parent.getString("sourceName");
+                Log.i(TAG, parent.getString("sourceUrl"));
+                Log.i(TAG, auth);
+                if (!auth.equals("Foodnetwork") && !parent.getString("instructions").equals("null")) { //&& parent.getString("instructions").charAt(0) != '<') {
 
-                        JSONArray ings = parent.getJSONArray("extendedIngredients");
-                        HashMap<String, Ingredient> ingredients = new HashMap<>();
-                        for (int i = 0; i < ings.length(); i++) {
-                            JSONObject temp = ings.getJSONObject(i);
-                            String ing = temp.getString("name"); // figure out what to get from ingredient here
-                            //Log.i(TAG, ing);
-                            String category = temp.getString("aisle");
-                            Bitmap bmp = null;
-                            double amount = temp.getDouble("amount");
-                            String unit = temp.getString("unit");
-                            if (temp.has("image")) {
-                                try {
-                                    URL url2 = new URL(temp.getString("image"));
-                                    bmp = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
-                                } catch (MalformedURLException e) {
-                                    Log.i(TAG, "BADURL");
-                                } catch (IOException e) {
-                                    Log.i(TAG, "BADIO");
-                                }
-                            }
-                            Ingredient ingredient = new Ingredient(ing, bmp, true, category,amount,unit);
-                            ingredients.put(ing, ingredient);
-                            // retrieve ingredients info u need
-                        }
-
-                        ArrayList<Step> steps = getRecipe(s,ingredients);
-
-                        if (steps.size() > 0) {
-                            //Log.i(TAG, "GOOOD");
-                            String name = parent.getString("title");
-                            //Log.i(TAG, name);
-                            int likes = parent.getInt("aggregateLikes");
-                            int servings = parent.getInt("servings");
-                            String author = "Anonymous";
-                            if (parent.has("sourceName")) author = parent.getString("sourceName");
-                            int cook_time = parent.getInt("readyInMinutes");
-                            // retrieve stuff here for recipe page
-                            int calories = -1; // checks in case doesn't have nutrition, adding all fat together
-                            int fat = -1;
-                            int protein = -1;
-                            int carbs = -1;
-                            if (parent.has("nutrition")) {
-                                JSONArray nutrients = parent.getJSONObject("nutrition").getJSONArray("nutrients");
-                                for (int i = 0; i < nutrients.length(); i++) {
-                                    JSONObject n = nutrients.getJSONObject(i);
-                                    String title = n.getString("title");
-                                    //Log.i(TAG, title);
-                                    if (title.equals("Calories")) calories = n.getInt("amount");
-                                    if (title.equals("Fat")) fat = n.getInt("amount");
-                                    if (title.equals("Protein")) protein = n.getInt("amount");
-                                    if (title.equals("Carbohydrates")) carbs = n.getInt("amount");
-
-                                }
-                            }
-
-                            Bitmap bitmap = null;
+                    JSONArray ings = parent.getJSONArray("extendedIngredients");
+                    HashMap<String, Ingredient> ingredients = new HashMap<>();
+                    for (int i = 0; i < ings.length(); i++) {
+                        JSONObject temp = ings.getJSONObject(i);
+                        String ing = temp.getString("name"); // figure out what to get from ingredient here
+                        //Log.i(TAG, ing);
+                        String category = temp.getString("aisle");
+                        Bitmap bmp = null;
+                        double amount = temp.getDouble("amount");
+                        String unit = temp.getString("unit");
+                        if (temp.has("image")) {
                             try {
-                                URL url2 = new URL(parent.getString("image"));
-                                bitmap = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
+                                URL url2 = new URL(temp.getString("image"));
+                                bmp = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
                             } catch (MalformedURLException e) {
                                 Log.i(TAG, "BADURL");
                             } catch (IOException e) {
                                 Log.i(TAG, "BADIO");
                             }
-
-                            boolean[] arr = new boolean[NUM_ALLERGIES];
-                            arr[0] = parent.getBoolean("vegetarian");
-                            arr[1] = parent.getBoolean("vegan");
-                            arr[2] = parent.getBoolean("glutenFree");
-                            arr[3] = parent.getBoolean("dairyFree");
-
-
-                            // change booleans if needed
-                            recipe = new Recipe(s + "", name, author, bitmap, steps, calories, protein, fat,
-                                    carbs, likes, servings, cook_time, arr);
-                            //Log.i(TAG,recipe.toString());
-                            //goodlist.add(author);
                         }
+                        Ingredient ingredient = new Ingredient(ing, bmp, true, category,amount,unit);
+                        ingredients.put(ing, ingredient);
+                        // retrieve ingredients info u need
                     }
-                    reader.close();
-                    stream.close();
-                    connection.disconnect();
 
-                } catch (MalformedURLException e) {
-                    Log.i(TAG, "Invalid URL.");
-                } catch (IOException e) {
-                    Log.i(TAG, "Failed");
-                } catch (Exception e) {
-                    Log.i(TAG, e.toString());
-                }
-                finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                    return recipe;
-                }
-            }
+                    ArrayList<Step> steps = getRecipe(s,ingredients);
 
-            private ArrayList<Step> getRecipe(int s, HashMap<String,Ingredient> ingredients) throws JSONException {
+                    if (steps.size() > 0) {
+                        //Log.i(TAG, "GOOOD");
+                        String name = parent.getString("title");
+                        //Log.i(TAG, name);
+                        int likes = parent.getInt("aggregateLikes");
+                        int servings = parent.getInt("servings");
+                        String author = "Anonymous";
+                        if (parent.has("sourceName")) author = parent.getString("sourceName");
+                        int cook_time = parent.getInt("readyInMinutes");
+                        // retrieve stuff here for recipe page
+                        int calories = -1; // checks in case doesn't have nutrition, adding all fat together
+                        int fat = -1;
+                        int protein = -1;
+                        int carbs = -1;
+                        if (parent.has("nutrition")) {
+                            JSONArray nutrients = parent.getJSONObject("nutrition").getJSONArray("nutrients");
+                            for (int i = 0; i < nutrients.length(); i++) {
+                                JSONObject n = nutrients.getJSONObject(i);
+                                String title = n.getString("title");
+                                //Log.i(TAG, title);
+                                if (title.equals("Calories")) calories = n.getInt("amount");
+                                if (title.equals("Fat")) fat = n.getInt("amount");
+                                if (title.equals("Protein")) protein = n.getInt("amount");
+                                if (title.equals("Carbohydrates")) carbs = n.getInt("amount");
 
-                HttpURLConnection connection = null;
-                ArrayList<Step> steps = new ArrayList<>();
-                try {
-                    URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
-                            + s + "/analyzedInstructions?stepBreakdown=true");
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
-                    connection.setRequestProperty("Accept", "application/json");
-                    connection.connect();
-                    InputStream stream = connection.getInputStream();
-                    BufferedReader reader = null;
-                    StringBuffer jsonBuffer = new StringBuffer("");
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    String line = "";
-                    while ((line = reader.readLine()) != null) {
-                        jsonBuffer.append(line);
-                    }
-                    String json = jsonBuffer.toString();
-                    //Log.i(TAG, json + "\n");
-
-
-                    JSONArray parent = new JSONArray(json).getJSONObject(0).getJSONArray("steps");
-                    if ((parent.length() != 0) && (parent.length() < 30)) {
-
-                        Log.i(TAG, "Num steps: " + parent.length());
-                        for (int i = 0; i < parent.length(); i++) {
-                            Log.i(TAG, "Step " + i);
-                            JSONObject obj = parent.getJSONObject(i);
-                            String direction = obj.getString("step");
-                            if (direction.length() > 5) {
-                                ArrayList<Ingredient> ings = new ArrayList<>();
-                                JSONArray jsonIngs = obj.getJSONArray("ingredients");
-                                for (int j = 0; j < jsonIngs.length(); j++) {
-                                    ings.add(ingredients.get(jsonIngs.getJSONObject(j).getString("name")));
-                                    //Log.i(TAG, jsonIngs.getJSONObject(j).getString("name"));
-                                }
-                                JSONArray jsonEquip = obj.getJSONArray("equipment");
-                                ArrayList<String> equipment = new ArrayList<>();
-                                for (int j = 0; j < jsonEquip.length(); j++) {
-                                    equipment.add(jsonEquip.getJSONObject(j).getString("name"));
-                                    //Log.i(TAG, equipment.get(j));
-                                }
-                                Step step = new Step(direction, ings, equipment);
-                                steps.add(step);
-                                Log.i(TAG, step.toString());
-                                // get ingredients with ingredients JSONArr then each JSONObj has image and name
-                                // get equipment with equipment JSONArr then each JSONObj has image and name
                             }
                         }
-                    }
-                    reader.close();
-                    stream.close();
-                    connection.disconnect();
+
+                        Bitmap bitmap = null;
+                        try {
+                            URL url2 = new URL(parent.getString("image"));
+                            bitmap = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
+                        } catch (MalformedURLException e) {
+                            Log.i(TAG, "BADURL");
+                        } catch (IOException e) {
+                            Log.i(TAG, "BADIO");
+                        }
+
+                        boolean[] arr = new boolean[NUM_ALLERGIES];
+                        arr[0] = parent.getBoolean("vegetarian");
+                        arr[1] = parent.getBoolean("vegan");
+                        arr[2] = parent.getBoolean("glutenFree");
+                        arr[3] = parent.getBoolean("dairyFree");
 
 
-                } catch (MalformedURLException e) {
-                    Log.i(TAG, "Invalid URL.");
-                } catch (IOException e) {
-                    Log.i(TAG, "Failed");
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
+                        // change booleans if needed
+                        recipe = new Recipe(s + "", name, author, bitmap, steps, calories, protein, fat,
+                                carbs, likes, servings, cook_time, arr);
+                        //Log.i(TAG,recipe.toString());
+                        //goodlist.add(author);
                     }
-                    return steps;
                 }
-            }
+                reader.close();
+                stream.close();
+                connection.disconnect();
 
-            public int getCounter() {
-                return counter;
+            } catch (MalformedURLException e) {
+                Log.i(TAG, "Invalid URL.");
+            } catch (IOException e) {
+                Log.i(TAG, "Failed");
+            } catch (Exception e) {
+                Log.i(TAG, e.toString());
             }
-
-            public void setCounter(int counter) {
-                this.counter = counter;
+            finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                return recipe;
             }
         }
+
+        private ArrayList<Step> getRecipe(int s, HashMap<String,Ingredient> ingredients) throws JSONException {
+
+            HttpURLConnection connection = null;
+            ArrayList<Step> steps = new ArrayList<>();
+            try {
+                URL url = new URL("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
+                        + s + "/analyzedInstructions?stepBreakdown=true");
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                BufferedReader reader = null;
+                StringBuffer jsonBuffer = new StringBuffer("");
+                reader = new BufferedReader(new InputStreamReader(stream));
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    jsonBuffer.append(line);
+                }
+                String json = jsonBuffer.toString();
+                //Log.i(TAG, json + "\n");
+
+
+                JSONArray parent = new JSONArray(json).getJSONObject(0).getJSONArray("steps");
+                if ((parent.length() != 0) && (parent.length() < 30)) {
+
+                    Log.i(TAG, "Num steps: " + parent.length());
+                    for (int i = 0; i < parent.length(); i++) {
+                        Log.i(TAG, "Step " + i);
+                        JSONObject obj = parent.getJSONObject(i);
+                        String direction = obj.getString("step");
+                        if (direction.length() > 5) {
+                            ArrayList<Ingredient> ings = new ArrayList<>();
+                            JSONArray jsonIngs = obj.getJSONArray("ingredients");
+                            for (int j = 0; j < jsonIngs.length(); j++) {
+                                ings.add(ingredients.get(jsonIngs.getJSONObject(j).getString("name")));
+                                //Log.i(TAG, jsonIngs.getJSONObject(j).getString("name"));
+                            }
+                            JSONArray jsonEquip = obj.getJSONArray("equipment");
+                            ArrayList<String> equipment = new ArrayList<>();
+                            for (int j = 0; j < jsonEquip.length(); j++) {
+                                equipment.add(jsonEquip.getJSONObject(j).getString("name"));
+                                //Log.i(TAG, equipment.get(j));
+                            }
+                            Step step = new Step(direction, ings, equipment);
+                            steps.add(step);
+                            Log.i(TAG, step.toString());
+                            // get ingredients with ingredients JSONArr then each JSONObj has image and name
+                            // get equipment with equipment JSONArr then each JSONObj has image and name
+                        }
+                    }
+                }
+                reader.close();
+                stream.close();
+                connection.disconnect();
+
+
+            } catch (MalformedURLException e) {
+                Log.i(TAG, "Invalid URL.");
+            } catch (IOException e) {
+                Log.i(TAG, "Failed");
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                return steps;
+            }
+        }
+
+        public static int getCounter() {
+            return counter;
+        }
+
+        public void setCounter(int counter) {
+            this.counter = counter;
+        }
+    }
 }
