@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
         ListView listView;
         Button loadMore;
         ArrayList<Ingredient> checkedIngredients;
-        int offset = 0;
+        int offset;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -675,9 +675,9 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
-
         public int updateData(String[] ingredients) {
             try {
+                offset = GetRecipesTask.getCounter();
                 ArrayList<Recipe> add = new GetRecipesTask("", "", 1, offset, getContext()).execute(ingredients).get();
                 for (Recipe recipe : add) {
                     ((RecipeListAdapter) ((HeaderViewListAdapter) listView.getAdapter()).getWrappedAdapter())
@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
             }
-            return GetRecipesTask.getCounter();
+            return offset;
         }
 
         // Test to check that checked ingredients are getting seeing correctly
