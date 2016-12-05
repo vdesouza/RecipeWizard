@@ -88,9 +88,15 @@ public class Ingredient implements Parcelable {
 
     public String toStringDisplay() {
         if (unit != null) {
-            return amount + " " + unit + " " + name;
+            if (Math.ceil(amount) == amount) {
+                return (int)amount + " " + unit + " " + name;
+            }
+            return String.format("%.2f", amount) + " " + unit + " " + name;
         } else {
-            return amount + " " + name;
+            if (Math.ceil(amount) == amount) {
+                return (int)amount + " " + name;
+            }
+            return String.format("%.2f", amount) + " " + name;
 
         }
     }
