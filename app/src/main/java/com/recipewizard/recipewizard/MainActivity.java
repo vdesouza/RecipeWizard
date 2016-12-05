@@ -676,6 +676,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public int updateData(String[] ingredients) {
+            for (int i = 0; i < checkedIngredients.size(); i++) {
+                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
+            }
             try {
                 offset = GetRecipesTask.getCounter();
                 ArrayList<Recipe> add = new GetRecipesTask("", "", 1, offset, getContext()).execute(ingredients).get();
