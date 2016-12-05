@@ -724,11 +724,11 @@ public class MainActivity extends AppCompatActivity {
         public void loadRecipes(String[] ingredients) {
             ArrayList<Recipe> recipes = new ArrayList<>();
             for (int i = 0; i < checkedIngredients.size(); i++) {
-                ingredients[i] = checkedIngredients.get(i).getName();
+                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
             }
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask("", "", 1, 0, getContext()).execute(ingredients).get();
+                    recipes = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, 0, getContext()).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
