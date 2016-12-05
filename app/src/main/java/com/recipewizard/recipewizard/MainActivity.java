@@ -647,8 +647,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-    // Fragment view for Recipes list
+// Fragment view for Recipes list
     public static class RecipesListFragment extends Fragment {
         ListView listView;
         Button loadMore;
@@ -660,7 +659,6 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
             final View footerView = inflater.inflate(R.layout.button_view, null, false);
-            footerView.setVisibility(View.INVISIBLE);
             loadMore = (Button) footerView.findViewById(R.id.load_more);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
             final String[] checkedIngredientsName = new String[checkedIngredients.size()];
@@ -668,7 +666,6 @@ public class MainActivity extends AppCompatActivity {
             loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    footerView.setVisibility(View.VISIBLE);
                     loadMore.setText("Load 10 more recipes");
                     offset = updateData(checkedIngredientsName);
                 }
