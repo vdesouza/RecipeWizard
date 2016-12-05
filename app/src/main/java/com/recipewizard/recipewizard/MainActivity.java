@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     final CharSequence[] allergyFilters = {" dairy ", " egg ", " gluten ", " peanut ", " sesame ", " seafood "
             , " shellfish ", " soy ", " sulfite ", " tree nut ", " wheat "};
     final CharSequence[] dietFilters = {" pescetarian ", " lacto vegetarian ", " ovo vegetarian ", " vegan ", " vegetarian "};
-    final ArrayList selectedAllergyFilters = new ArrayList();
-    final ArrayList selectedDietFilters = new ArrayList();
+    final static ArrayList selectedAllergyFilters = new ArrayList();
+    final static ArrayList selectedDietFilters = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +281,34 @@ public class MainActivity extends AppCompatActivity {
         });
 
         alert.show();
+    }
+
+    private static String formatAllergyFilter() {
+        String intolerances = "";
+        for (int i = 0; i < selectedAllergyFilters.size(); i++) {
+            String item = (String) selectedAllergyFilters.get(i);
+            item.replace(" ", "+");
+            if (intolerances.equals("")) {
+                intolerances = item;
+            } else {
+                intolerances = intolerances + "," + item;
+            }
+        }
+        return intolerances;
+    }
+
+    private static String formatDietFilter() {
+        String diet = "";
+        for (int i = 0; i < selectedDietFilters.size(); i++) {
+            String item = (String) selectedDietFilters.get(i);
+            item.replace(" ", "+");
+            if (diet.equals("")) {
+                diet = item;
+            } else {
+                diet = diet + "," + item;
+            }
+        }
+        return diet;
     }
 
 
@@ -662,12 +690,12 @@ public class MainActivity extends AppCompatActivity {
         public void loadRecipes(String[] ingredients) {
 
             for (int i = 0; i < checkedIngredients.size(); i++) {
-                ingredients[i] = checkedIngredients.get(i).getName();
+                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
             }
             ArrayList<Recipe> recipes = new ArrayList<>();
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask("", "", 1).execute(ingredients).get();
+                    recipes = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, offset).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
