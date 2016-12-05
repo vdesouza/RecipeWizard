@@ -355,8 +355,8 @@
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
                     android:id="@+id/recipe_summary"
-                    android:layout_marginLeft="45dp"
-                    android:layout_marginRight="45dp"/>
+                    android:layout_marginLeft="@dimen/summary_margin"
+                    android:layout_marginRight="@dimen/summary_margin"/>/>
             </LinearLayout>
         </ScrollView>
 
