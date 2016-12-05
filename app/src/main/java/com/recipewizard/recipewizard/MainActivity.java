@@ -673,6 +673,7 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
+        // reset ingredients/put in new one = fail
         public int updateData(String[] ingredients) {
             for (int i = 0; i < checkedIngredients.size(); i++) {
                 ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
@@ -800,7 +801,7 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<Recipe> doInBackground(String... args) {
 
             try {
-
+                Log.i(TAG, args[0]);
                 return getRecipeIDs(args[0]);
 
             } catch (JSONException e) {
@@ -825,7 +826,7 @@ public class MainActivity extends AppCompatActivity {
                 urlString.append(counter);
                 if (!diet.equals("")) urlString.append("&diet=" + diet);
                 if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);
-                //Log.i(TAG, urlString.toString());
+                Log.i(TAG, urlString.toString());
                 URL url = new URL(urlString.toString());
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
