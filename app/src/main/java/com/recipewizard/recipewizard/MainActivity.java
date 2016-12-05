@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -801,9 +802,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Recipe> doInBackground(String... args) {
 
+            String ings = args[0];
+            for (int i = 1; i < args.length; i ++) {
+                ings += "," + args[i];
+            }
+            ings.replace("", "+");
+            Log.i(TAG,ings);
+
             try {
-                Log.i(TAG, args[0]);
-                return getRecipeIDs(args[0]);
+
+                return getRecipeIDs(ings);
 
             } catch (JSONException e) {
                 Log.i(TAG,"FUCK");
