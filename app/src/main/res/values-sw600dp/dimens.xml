@@ -6,4 +6,5 @@
     <dimen name="star_marginTop">55dp</dimen>
     <dimen name="recipe_item_layout_top">95dp</dimen>
     <dimen name="recipe_nutrition">64dp</dimen>
+    <dimen name="summary_margin">45dp</dimen>
 </resources>
