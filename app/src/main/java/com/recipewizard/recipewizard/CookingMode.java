@@ -181,7 +181,7 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
         if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
             if (i != null) {
-                if (i.getName().length() > 0 && !(i.getName().equals("null")) && !ings.contains(i.getName())) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
                     ret += (i.toStringDisplay() + ", ");
                 }
             }
@@ -195,7 +195,7 @@ public class CookingMode extends AppCompatActivity implements CameraGestureSenso
         String ret = "";
         if (equipments.isEmpty()) return ret;
         for (String s : equipments) {
-            if (!s.isEmpty() && !equips.contains(s)) {
+            if (!s.isEmpty() ) {
                 if (s.length() > 0 && !(s.equals("null"))) ret += (s + ", ");
             }
         }
