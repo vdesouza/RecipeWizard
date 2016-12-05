@@ -43,15 +43,14 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         this.resource = resource;
         favoritesList = (new RecipeToFile(null, getContext())).getFavoritesListFromFile();
     }
-/*
+
     // Add an Recipe to the adapter
     // Notify observers that the data set has changed
     public void add(Recipe item) {
-        mItems.add(item);
-        mDisplayedItems.add(item);
+        recipeItems.add(item);
         notifyDataSetChanged();
     }
-    public void remove(Recipe position) {
+/*    public void remove(Recipe position) {
         mItems.remove(position);
         mDisplayedItems.remove(position);
         notifyDataSetChanged();
