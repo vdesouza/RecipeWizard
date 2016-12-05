@@ -7,4 +7,5 @@
     <dimen name="recipe_item_layout_top">95dp</dimen>
     <dimen name="recipe_nutrition">64dp</dimen>
     <dimen name="summary_margin">45dp</dimen>
+    <dimen name="summary_image">200dp</dimen>
 </resources>
