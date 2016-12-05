@@ -817,8 +817,8 @@ public class MainActivity extends AppCompatActivity {
             //Log.i(TAG,"QUERY: " + query);
             try {
                 StringBuilder urlString = new StringBuilder("https://spoonacular-recipe-food-nutrition-" +
-                        "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&ingredients=");
-                urlString.append(s + "&query=" + s + "&number=100&query=&ranking=");
+                        "v1.p.mashape.com/recipes/searchComplex?addRecipeInformation=true&limitLicense=false&includeIngredients=");
+                urlString.append(s + "&number=100&query=&ranking=");
                 urlString.append(ranking + "&offset=");
                 urlString.append(counter);
                 if (!diet.equals("")) urlString.append("&diet=" + diet);
