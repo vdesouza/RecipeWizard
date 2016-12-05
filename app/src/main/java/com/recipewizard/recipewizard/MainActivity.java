@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                 intolerances = intolerances + "," + item;
             }
         }
-        return intolerances;
+        return intolerances.replace(" ", "");
     }
 
     private static String formatDietFilter() {
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                 diet = diet + "," + item;
             }
         }
-        return diet;
+        return diet.replace(" ", "");
     }
 
 
