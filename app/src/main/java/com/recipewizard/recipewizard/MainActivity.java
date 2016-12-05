@@ -659,16 +659,17 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_holder, container, false);
             listView = (ListView) rootView.findViewById(R.id.recipe_list);
-            View footerView = inflater.inflate(R.layout.button_view, null, false);
-            listView.addFooterView(footerView);
-            loadMore = (Button) rootView.findViewById(R.id.load_more);
+            final View footerView = inflater.inflate(R.layout.button_view, null, false);
+            footerView.setVisibility(View.INVISIBLE);
+            loadMore = (Button) footerView.findViewById(R.id.load_more);
             checkedIngredients = mMasterIngredientsList.getCheckedIngredients();
             final String[] checkedIngredientsName = new String[checkedIngredients.size()];
             loadRecipes(checkedIngredientsName);
             loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO: change to offset = GetRecipesTask.getCount();
+                    footerView.setVisibility(View.VISIBLE);
+                    loadMore.setText("Load 10 more recipes");
                     offset = updateData(checkedIngredientsName);
                 }
             });
@@ -681,7 +682,7 @@ public class MainActivity extends AppCompatActivity {
             }
             try {
                 offset = GetRecipesTask.getCounter();
-                ArrayList<Recipe> add = new GetRecipesTask("", "", 1, offset, getContext()).execute(ingredients).get();
+                ArrayList<Recipe> add = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, offset, getContext()).execute(ingredients).get();
                 for (Recipe recipe : add) {
                     ((RecipeListAdapter) ((HeaderViewListAdapter) listView.getAdapter()).getWrappedAdapter())
                             .insert(recipe, ((RecipeListAdapter) ((HeaderViewListAdapter)
@@ -715,6 +716,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Ingredient> currCheckedIngredients = mMasterIngredientsList.getCheckedIngredients();
                 // only update recipes if checked ingredients changed.
                 if (!checkedIngredients.equals(currCheckedIngredients)) {
+                    listView.setAdapter(null);
                     checkedIngredients = currCheckedIngredients;
                     String[] checkedIngredientsName = new String[checkedIngredients.size()];
                     loadRecipes(checkedIngredientsName);
