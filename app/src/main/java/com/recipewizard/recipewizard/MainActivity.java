@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -673,9 +674,11 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
+        // reset ingredients/put in new one = fail
         public int updateData(String[] ingredients) {
             for (int i = 0; i < checkedIngredients.size(); i++) {
-                ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
+                ingredients[i] =
+                        checkedIngredients.get(i).getName().replace(" ", "+");
             }
             try {
                 offset = GetRecipesTask.getCounter();
@@ -799,9 +802,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Recipe> doInBackground(String... args) {
 
+            String ings = args[0];
+            for (int i = 1; i < args.length; i ++) {
+                ings += "," + args[i];
+            }
+            ings.replace("", "+");
+            Log.i(TAG,ings);
+
             try {
 
-                return getRecipeIDs(args[0]);
+                return getRecipeIDs(ings);
 
             } catch (JSONException e) {
                 Log.i(TAG,"FUCK");
@@ -825,7 +835,7 @@ public class MainActivity extends AppCompatActivity {
                 urlString.append(counter);
                 if (!diet.equals("")) urlString.append("&diet=" + diet);
                 if (!intolerances.equals("")) urlString.append("&intolerances=" + intolerances);
-                //Log.i(TAG, urlString.toString());
+                Log.i(TAG, urlString.toString());
                 URL url = new URL(urlString.toString());
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("X-Mashape-Key", "3d1ZGQjt7hmsh2B0zVtq6WnhnvsLp1pwVDbjsnaab1DFJfuV6r");
