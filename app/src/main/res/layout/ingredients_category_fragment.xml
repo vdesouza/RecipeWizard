@@ -12,6 +12,7 @@
               android:layout_height="match_parent"
               android:gravity="top|center"
               android:padding="56dp"
+              android:lines="1"
               android:textSize="20sp"/>
 
     <!-- GridView that holds ingredients categories -->
