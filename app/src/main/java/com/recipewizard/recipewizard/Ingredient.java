@@ -74,7 +74,7 @@ public class Ingredient implements Parcelable {
     }
 
     public String toString() {
-        return name + "," + checked + "," + category + "," + amount + "," + unit + ",";
+        return name.replace(" ", "") + "," + checked + "," + category.replace(",", "") + "," + amount + "," + unit + ",";
     }
 
     public String toStringForSaving() {

@@ -37,7 +37,7 @@ public class Step implements Parcelable{
 
 
     public String toString() {
-        return direction + "." + TextUtils.join(".", ingredients) + "." + TextUtils.join(",", equipment);
+        return direction + "/" + TextUtils.join("/", ingredients) + "~" + TextUtils.join(",", equipment);
     }
 
     @Override
