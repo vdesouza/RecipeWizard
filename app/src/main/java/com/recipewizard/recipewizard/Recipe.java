@@ -190,10 +190,24 @@ public class Recipe {
         return calories + "," + protein + "," + carbs + "," + fat + "," + likes + "," + servings +
                 "," + cook_time_minutes;
     }
+    private String allergyInformationToString(){
+        String allergies = "";
+        for(int i = 0; i < NUM_ALLERGIES; i++){
+            if(allergyInformation[i]){
+                allergies+="1";
+            } else {
+                allergies+="0";
+            }
+            if(i < 9){
+                allergies+=",";
+            }
+        }
+        return allergies;
+    }
 
     public String toString() {
         return id + ITEM_SEP + name + ITEM_SEP + author + ITEM_SEP + TextUtils.join(";", steps) +
-                ITEM_SEP + recipeNumbersToString() + ITEM_SEP + allergyInformation.toString();
+                ITEM_SEP + recipeNumbersToString() + ITEM_SEP + allergyInformationToString();
     }
 
 }
