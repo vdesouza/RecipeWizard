@@ -178,7 +178,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         if (ingredients.isEmpty()) return ret;
         for (Ingredient i : ingredients) {
             if (i != null) {
-                if (i.getName().length() > 0 && !(i.getName().equals("null")) ) {
+                if (i.getName().length() > 0 && !(i.getName().equals("null"))) {
                     ret += (i.toStringDisplay() + ", ");
                 }
             }
