@@ -154,7 +154,7 @@ public class RecipeSummaryActivity extends AppCompatActivity {
         cook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RecipeSummaryActivity.this, CookingModeLoaderActivity.class);
+                Intent intent = new Intent(RecipeSummaryActivity.this, CookingMode.class);
                 Bundle bundle = new Bundle();
                 //bundle.putParcelableArrayList("steps", (ArrayList)recipe.getSteps());
                 bundle.putString("name", recipe.getName());
