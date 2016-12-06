@@ -681,21 +681,25 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < checkedIngredients.size(); i++) {
                 ingredients[i] = checkedIngredients.get(i).getName().replace(" ", "+");
             }
-            try {
-                offset = GetRecipesTask.getCounter();
-                ArrayList<Recipe> add = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, offset, getContext()).execute(ingredients).get();
+
+            offset = GetRecipesTask.getCounter();
+            new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, GetRecipesTask.getCounter(), getContext(),this).execute(ingredients);
+
+            return offset;
+        }
+
+        public void postExecuteUpdate(ArrayList<Recipe> recipes) {
+
+            ArrayList<Recipe> add = (ArrayList<Recipe>) recipes.clone();
                 for (Recipe recipe : add) {
                     ((RecipeListAdapter) ((HeaderViewListAdapter) listView.getAdapter()).getWrappedAdapter())
                             .insert(recipe, ((RecipeListAdapter) ((HeaderViewListAdapter)
                                     listView.getAdapter()).getWrappedAdapter()).getCount());
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                Log.i(TAG, "exception");
-            }
-            return offset;
+
         }
 
-        // Test to check that checked ingredients are getting seeing correctly
+    // Test to check that checked ingredients are getting seeing correctly
         // Get all checked ingredients by calling mMasterIngredientsList.getCheckedIngredients()
         // Returns ArrayList<Ingredients>
         @Override
@@ -733,7 +737,7 @@ public class MainActivity extends AppCompatActivity {
             }
             try {
                 if (ingredients.length > 0) {
-                    recipes = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, 0, getContext()).execute(ingredients).get();
+                    recipes = new GetRecipesTask(formatAllergyFilter(), formatDietFilter(), 1, 0, getContext(),this).execute(ingredients).get();
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.i(TAG, "exception");
@@ -743,6 +747,8 @@ public class MainActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     }
+
+
 
 
     // Takes in the ingredients as a string separated by commas (ex. "apples,cinammon")
@@ -755,6 +761,7 @@ public class MainActivity extends AppCompatActivity {
         public static final int NUM_ALLERGIES = 4;
         Context context;
         ProgressDialog progressDialog;
+        RecipesListFragment recipesListFragment;
 
         HashSet<String> blacklist = new HashSet<>();
         HashSet<String> goodlist = new HashSet<>();
@@ -779,21 +786,24 @@ public class MainActivity extends AppCompatActivity {
             this.progressDialog.setCancelable(false);
             this.progressDialog.setProgressStyle(android.R.attr.progressBarStyleLarge);
             this.progressDialog.show();
+
         }
         @Override
         protected void onPostExecute(ArrayList <Recipe> recipes) {
             if(this.progressDialog != null){
                 this.progressDialog.dismiss();
             }
+            recipesListFragment.postExecuteUpdate(recipes);
         }
 
-        public GetRecipesTask(String intolerances, String diet, int ranking, int offset, Context context) {
+        public GetRecipesTask(String intolerances, String diet, int ranking, int offset, Context context, RecipesListFragment fragment) {
             this.intolerances = intolerances;
             this.diet = diet;
             this.ranking = ranking;
             this.counter = offset;
             this.context = context;
             Log.i(TAG, "counter: " + this.counter);
+            this.recipesListFragment = fragment;
 //        for (int i = 0; i < blist.length; i++) {
 //            blacklist.add(blist[i]);
 //        }
