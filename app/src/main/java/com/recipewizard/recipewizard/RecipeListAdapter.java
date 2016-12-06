@@ -138,7 +138,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), RecipeSummaryLoaderActivity.class);
+                Intent intent = new Intent(getContext(), RecipeSummaryActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putString("UniqueId", "Recipes");
