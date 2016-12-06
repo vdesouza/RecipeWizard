@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="-4dp">
     <Button
-        android:text="Load 10 more recipes"
+        android:text="Load 5 more recipes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/load_more"
