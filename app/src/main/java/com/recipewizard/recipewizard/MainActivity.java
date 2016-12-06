@@ -860,7 +860,7 @@ public class MainActivity extends AppCompatActivity {
                     Recipe recipe = getRecipeInfo(id);
                     if (recipe != null) {
                         recipes.add(recipe);
-                    } if (recipes.size() == 10) {
+                    } if (recipes.size() == 5) {
 
 //                    Recipe r = getRecipeInfo(5014);
 //                    if (r != null) {
